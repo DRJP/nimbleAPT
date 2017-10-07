@@ -1,5 +1,8 @@
-# Object file
-*.o
-
-# Ada Library Information
-*.ali
+*.Rdata
+*.Rhistory
+*.pdf
+*.png
+*.tiff
+*.jpg
+*.jpeg
+*.ps

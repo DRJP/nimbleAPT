@@ -156,6 +156,7 @@ buildAPT <- nimbleFunction(
                 } 
             } else {   ## time == FALSE 
                 for(tt in 1:nTemps) {
+                    ## browser()
                     ## Copy state of MCMC at temperature tt to model & mvSaved and continue
                     nimCopy(from=mvTemps, to=model,   row=tt,  logProb = TRUE) 
                     nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE) 

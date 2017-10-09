@@ -20,12 +20,18 @@ sampler_RW_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## Control list extraction
-        logScale      <- control$log
-        reflective    <- control$reflective
-        adaptive      <- control$adaptive
-        adaptInterval <- control$adaptInterval
-        scale         <- control$scale
-        temperPriors  <- control$temperPriors
+        logScale      <- if(!is.null(control$log))           control$log           else FALSE
+        reflective    <- if(!is.null(control$reflective))    control$reflective    else FALSE
+        adaptive      <- if(!is.null(control$adaptive))      control$adaptive      else TRUE
+        adaptInterval <- if(!is.null(control$adaptInterval)) control$adaptInterval else 200
+        scale         <- if(!is.null(control$scale))         control$scale         else 1
+        temperPriors  <- if(!is.null(control$temperPriors))  control$temperPriors  else stop("control$temperPriors unspecified in sampler_RW_tempered")
+        ## logScale      <- control$log
+        ## reflective    <- control$reflective
+        ## adaptive      <- control$adaptive
+        ## adaptInterval <- control$adaptInterval
+        ## scale         <- control$scale
+        ## temperPriors  <- control$temperPriors
         if (is.null(temperPriors))
             stop("control$temperPriors unspecified in sampler_RW_tempered")
         ## Node list generation
@@ -40,7 +46,6 @@ sampler_RW_tempered <- nimbleFunction(
         timesAdapted  <- 0
         optimalAR     <- 0.44
         gamma1        <- 0
-        range         <- unlist(getDistributionInfo(model$getDistribution(target))$range) ## getDistribution(model$getNodeDistribution(target))$range
         ## Checks
         if(length(targetAsScalar) > 1) stop('cannot use RW sampler on more than one target; try RW_block sampler')
         if(model$isDiscrete(target))   stop('cannot use RW sampler on discrete-valued target; try slice sampler')
@@ -50,6 +55,7 @@ sampler_RW_tempered <- nimbleFunction(
     },  
     run = function() { 
         ## nimPrint(temperature[1])
+        ## browser()
         currentValue <- model[[target]]
         propLogScale <- 0
         if(logScale) {
@@ -59,10 +65,12 @@ sampler_RW_tempered <- nimbleFunction(
             propValue <- rnorm(1, mean = currentValue,  sd = scale)
         }
         if(reflective) { 
-            while(propValue < range[1] | propValue > range[2]) {
-                if(propValue < range[1]) propValue <- 2*range[1] - propValue
-                if(propValue > range[2]) propValue <- 2*range[2] - propValue
-            } 
+            lower <- model$getBound(target, 'lower')
+            upper <- model$getBound(target, 'upper')
+            while(propValue < lower | propValue > upper) {
+                if(propValue < lower) propValue <- 2*lower - propValue
+                if(propValue > upper) propValue <- 2*upper - propValue
+            }
         } 
         if (temperPriors) {
             model[[target]] <<- propValue 
@@ -125,15 +133,21 @@ sampler_RW_block_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
-        adaptive       <- control$adaptive
-        adaptScaleOnly <- control$adaptScaleOnly
-        adaptInterval  <- control$adaptInterval
-        scale          <- control$scale
-        propCov        <- control$propCov
-        temperPriors   <- control$temperPriors
-        if (is.null(temperPriors)) {
-            stop("control$temperPriors unspecified in sampler_RW_block_tempered")
-        }
+        adaptive       <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
+        adaptScaleOnly <- if(!is.null(control$adaptScaleOnly)) control$adaptScaleOnly else FALSE
+        adaptInterval  <- if(!is.null(control$adaptInterval))  control$adaptInterval  else 200
+        scale          <- if(!is.null(control$scale))          control$scale          else 1
+        propCov        <- if(!is.null(control$propCov))        control$propCov        else 'identity'
+        temperPriors   <- if(!is.null(control$temperPriors))   control$temperPriors   else stop("control$temperPriors unspecified in sampler_RW_block_tempered")
+        ## adaptive       <- control$adaptive
+        ## adaptScaleOnly <- control$adaptScaleOnly
+        ## adaptInterval  <- control$adaptInterval
+        ## scale          <- control$scale
+        ## propCov        <- control$propCov
+        ## temperPriors   <- control$temperPriors
+        ## if (is.null(temperPriors)) {
+        ##     stop("control$temperPriors unspecified in sampler_RW_block_tempered")
+        ## }
         ## node list generation
         targetAsScalar <- model$expandNodeNames(target, returnScalarComponents = TRUE)
         calcNodes      <- model$getDependencies(target)
@@ -240,10 +254,14 @@ sampler_slice_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
-        adaptive       <- control$adaptive
-        adaptInterval  <- control$adaptInterval
-        width          <- control$sliceWidth
-        maxSteps       <- control$sliceMaxSteps
+        adaptive       <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
+        adaptInterval  <- if(!is.null(control$adaptInterval))  control$adaptInterval  else 200
+        width         <- if(!is.null(control$width))           control$width          else 1
+        maxSteps      <- if(!is.null(control$sliceMaxSteps))   control$sliceMaxSteps else 100
+        ## adaptive       <- control$adaptive
+        ## adaptInterval  <- control$adaptInterval
+        ## width          <- control$sliceWidth
+        ## maxSteps       <- control$sliceMaxSteps
         ## node list generation
         targetAsScalar <- model$expandNodeNames(target, returnScalarComponents = TRUE)
         calcNodes      <- model$getDependencies(target)
@@ -337,9 +355,12 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
-        adaptive      <- control$adaptive
-        adaptInterval <- control$adaptInterval
-        useTempering  <- control$useTempering
+        adaptive      <- if(!is.null(control$adaptive))         control$adaptive      else TRUE
+        adaptInterval <- if(!is.null(control$adaptInterval))    control$adaptInterval else 200
+        useTempering      <- if(!is.null(control$useTempering)) control$useTempering  else stop("control$useTempering unspecified in sampler_RW_multinomial_tempered")
+        ## adaptive      <- control$adaptive
+        ## adaptInterval <- control$adaptInterval
+        ## useTempering  <- control$useTempering
         ## node list generation
         targetAsScalar <- model$expandNodeNames(target, returnScalarComponents = TRUE)
         targetAllNodes <- unique(model$expandNodeNames(target))

@@ -4,16 +4,22 @@
 ## Parameters are then estimated for a "wrong" model, which resembles a misspecified mixture model. 
 ##################################################################################################################
 options(width=400)
-library(nimble, lib.loc="~/R/x86_64-pc-linux-gnu-library/3.2/nimbleOldVersions/nimble_0.6-5")
+## library(nimble, lib.loc="~/R/x86_64-pc-linux-gnu-library/3.2/nimbleOldVersions/nimble_0.6-5")
+library(nimble)
 library(coda)
 source("APT_build.R")
 source("APT_samplers.R")
 source("APT_functions.R")
 help.start()
 
-pv <- as.character(packageVersion("nimble"))
-if (!is.element(pv, c("0.6.5","0.6.4")))
-    stop("The APT library requires nimble 0.6-5 or 0.6-4.")
+## pv <- as.character(packageVersion("nimble"))
+## if (!is.element(pv, c("0.6.5","0.6.4")))
+##     warning("The APT library requires nimble 0.6-5 or 0.6-4.")
+
+#############################
+## Set up graphics devices ##
+#############################
+graphics.off(); X11(w=5,h=5); X11(w=5,h=5); X11(w=5,h=5); X11(w=5,h=5)
 
 ####################
 ## Some Functions ##
@@ -97,7 +103,6 @@ wInits     <- list(theta0=theta0, sigma0=sigma0, rfx_theta=rfx_theta, rfx_sigma=
 right <- nimbleModel(rightCode, constants=rConstants, inits=rInits)
 wrong <- nimbleModel(wrongCode, constants=wConstants, inits=wInits)
 
-
 #############################################
 ## Simulate data but not the stochastic nodes
 #############################################
@@ -160,7 +165,6 @@ apt$addMonitors2(allLogProbs)
 apt$getMonitors()
 apt$getMonitors2()
 
-
 #################################################
 ## Build and compile the MCMC & APT algorithms ##
 #################################################
@@ -176,15 +180,17 @@ nIter   <- 1E5
 cMCMC$run(nIter)
 samples  <- as.matrix(cMCMC$mvSamples)
 codaMCMC <- as.mcmc(samples)
-##
-graphics.off(); X11(); X11(); X11()
+## Plot 1: trajectories
 plot(codaMCMC)                               ## Trajectories display the expected poor mixing - particularly in k
 (ess <- sort(effectiveSize(codaMCMC)))       ## Effective sample size is very low
 (suggestedThinning <- round(nIter/min(ess))) ## Thinning would need to be at least this high
+## Plot 2: autocorrelation
 dev.set()
 autocorr.plot(codaMCMC)
+## Plot 3: sigma0~theta0
 dev.set()
-plot(samples[,"theta0"],samples[,"sigma0"])
+par(mfrow=c(1,1))
+plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
 
 ###############
 ## APT in C ##
@@ -195,15 +201,20 @@ cAPT$run(nIter, printTemps=TRUE, progressBar=FALSE)
 samples <- as.matrix(cAPT$mvSamples)
 codaAPT <- as.mcmc(samples)
 
-## Plot: trajectories 
+## Plot 1: trajectories
+dev.set()
 plot(codaAPT)                                ## Trajectories display improved mixing - but could be better
-
-## Plot: autocorrelation
+## Plot 2: autocorrelation
+dev.set()
 (ess <- sort(effectiveSize(codaAPT)))        ## Effective sample size is higher
 (suggestedThinning <- round(nIter/min(ess))) ## Thinning can be lower
 autocorr.plot(codaAPT)
-
-## Plot: temperature ladder trajectories 
+## Plot 3: sigma0~theta0
+dev.set()
+par(mfrow=c(1,1))
+plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
+## Plot 4: temperature ladder trajectories
+dev.set()
 plot.tempTraj(cAPT)
 
 
@@ -220,13 +231,6 @@ plot.tempTraj(cAPT)
 ## Here effective sample size calcualted from the pre-runs can help                             ##
 ##################################################################################################
 
-## Rebuild APT with longer temperature ladder
-APT   <- buildAPT(apt, Temps=1:11, monitorTmax=TRUE) 
-cAPT  <- compileNimble(APT)
-
-## Set two graphics devices for monitorring
-graphics.off(); X11(); X11(); X11(); X11()
-
 ## Reinitialise wrong2 with some wild values
 samplesTmax <- as.matrix(cAPT$mvSamplesTmax)
 init <- samplesTmax[samplesTmax[,"theta0"]==max(samplesTmax[,"theta0"]),]
@@ -235,6 +239,9 @@ cWrong2$theta0 <- init["theta0"]
 cWrong2$sigma0 <- init["sigma0"]
 cWrong2$simulate(cWrong2$getDependencies(c("k","theta0","sigma0"), includeData=FALSE, self=FALSE))
 
+## Rebuild APT with longer temperature ladder
+APT  <- buildAPT(apt, Temps=1:11, monitorTmax=TRUE) 
+cAPT <- compileNimble(APT)
 
 print("#########################")
 print("Starting adaptive burn-in")
@@ -263,11 +270,14 @@ while(ii==0 | meanL > meanL_previous + 2) {
                                   progressBar    = FALSE, 
                                   tuneTemper1=TuneTemper[1], tuneTemper2=TuneTemper[2]))
     nimPrint("While loop: 2nd short run finished. sysT = ", syst2[3])
-    samples   <- tail(as.matrix(cAPT$mvSamples), floor(nIter/THIN)) 
+    samples   <- tail(as.matrix(cAPT$mvSamples), floor(nIter/THIN))
+    ## Plot 1: temperature ladder trajectories
     dev.set()
     plot.tempTraj(cAPT)
+    ## Plot 2: sigma0~theta0
     dev.set()
-    plot(samples[,"theta0"],samples[,"sigma0"])
+    par(mfrow=c(1,1))
+    plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
     ##################################################################################################
     ## Short run 2 - reset the flexibility of the AMH samplers & prevent temperature ladder adaptation   
     nIter <- 5E4; cAPT$thinPrintTemps <- nIter / 10
@@ -290,7 +300,7 @@ while(ii==0 | meanL > meanL_previous + 2) {
     ESS       <- sort(effectiveSize(mc))
     (suggestedThinning <- round(nIter/min(ESS))) 
     nimPrint("ESS = ", ESS[1])
-    ## Plot
+    ## Plot 3: trajectories
     dev.set()
     plot(mc)    
 }
@@ -310,15 +320,18 @@ nimPrint("While loop: 2nd short run finished. sysT = ", syst2[3])
 samples <- tail(as.matrix(cAPT$mvSamples), floor(nIter/suggestedThinning)) 
 codaAPT <- as.mcmc(samples)
 
-## Plot: trajectories 
+## Plot 1: trajectories 
 dev.set()
 plot(codaAPT)                                ## Trajectories display improved mixing - but could be better
-## Plot: autocorrelation
+## Plot 2: autocorrelation
 dev.set()
 autocorr.plot(codaAPT)
-## Plot: temperature ladder trajectories
+## Plot 3: sigma0~theta0
 dev.set()
 par(mfrow=c(1,1))
 plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
+## Plot 4: temperature ladder trajectories
+dev.set()
+plot.tempTraj(cAPT)
 
 effectiveSize(codaAPT) ## Much healthier!

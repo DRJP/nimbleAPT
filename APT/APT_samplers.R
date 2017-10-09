@@ -495,7 +495,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \item adaptive. A logical argument, specifying whether the sampler should adapt the scale (proposal standard deviation) throughout the course of MCMC execution to achieve a theoretically desirable acceptance rate. (default = TRUE)
 #' \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW sampler will perform its adaptation procedure.  This updates the scale variable, based upon the sampler's achieved acceptance rate over the past adaptInterval iterations. (default = 200)
 #' \item scale. The initial value of the normal proposal standard deviation.  If adaptive = FALSE, scale will never change. (default = 1)
-#' \item temperPriors. Logical indicator determining if temperring should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
+#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
 #' }
 #'
 #' The RW sampler cannot be used with options log=TRUE and reflective=TRUE, i.e. it cannot do reflective sampling on a log scale.
@@ -511,7 +511,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW_block sampler will perform its adaptation procedure, based on the past adaptInterval iterations. (default = 200)
 #' \item scale. The initial value of the scalar multiplier for propCov.  If adaptive = FALSE, scale will never change. (default = 1)
 #' \item propCov. The initial covariance matrix for the multivariate normal proposal distribution.  This element may be equal to the character string 'identity', in which case the identity matrix of the appropriate dimension will be used for the initial proposal covariance matrix. (default = 'identity')
-#' \item temperPriors. Logical indicator determining if temperring should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
+#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
 #' }
 #'
 #' @section slice sampler:

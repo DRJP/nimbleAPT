@@ -1,6 +1,6 @@
-#######################################################################################
-## buildAPT was adapted from Nimble's buildMCMC to provide adaptive parallel temperring
-#######################################################################################
+######################################################################################
+## buildAPT was adapted from Nimble's buildMCMC to provide adaptive parallel tempering
+######################################################################################
 
 buildAPT <- nimbleFunction(
     setup = function(conf,                ## As for buildMCMC 

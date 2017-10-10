@@ -1,9 +1,9 @@
-Package: testSkeleton
+Package: nimble-snippets
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: A collection of functions and algorithms written in Nimble. 
+Version: 1.0.1
 Date: 2017-10-10
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: David Pleydell
+Maintainer: <david.pleydell@inra.fr>
+Description: Contains functions for adaptive parallel tempering (APT).
+License: BSD_3_clause

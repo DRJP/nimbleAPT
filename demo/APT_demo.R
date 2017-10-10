@@ -4,17 +4,15 @@
 ## Parameters are then estimated for a "wrong" model, which resembles a misspecified mixture model. 
 ##################################################################################################################
 options(width=400)
-## library(nimble, lib.loc="~/R/x86_64-pc-linux-gnu-library/3.2/nimbleOldVersions/nimble_0.6-5")
+
+# library(NimbleSnippets)
 library(nimble)
 library(coda)
-source("APT_build.R")
-source("APT_samplers.R")
-source("APT_functions.R")
-help.start()
-
-## pv <- as.character(packageVersion("nimble"))
-## if (!is.element(pv, c("0.6.5","0.6.4")))
-##     warning("The APT library requires nimble 0.6-5 or 0.6-4.")
+source("~/nimbleProject/nimble-snippets/R/APT_build.R")
+source("~/nimbleProject/nimble-snippets/R/APT_functions.R")
+source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
+## BUG HERE: buildAPT works if we source the .R files above, but fails if we load them via library(NimbleSnippets)
+##           Surely some kind of environment issue.
 
 #############################
 ## Set up graphics devices ##
@@ -83,7 +81,7 @@ wrongCode <- nimbleCode({
 ##############################################
 ## Parameters, constants and initial values ##
 ##############################################
-N <- 50  ## low N => MCMC jumps between modes easily, high N => MCMC never jumps between modes, intermediate N => MCMC occasionally jumps between modes.
+N         <- 50  ## low N => MCMC jumps between modes easily, high N => MCMC never jumps between modes, intermediate N => MCMC occasionally jumps between modes.
 theta0    <- 0
 sigma0    <- 1
 K         <- 10
@@ -170,6 +168,7 @@ apt$getMonitors2()
 #################################################
 MCMC  <- buildMCMC(mcmc)
 cMCMC <- compileNimble(MCMC)
+##debug(buildAPT)
 APT   <- buildAPT(apt, Temps=1:7, monitorTmax=TRUE) 
 cAPT  <- compileNimble(APT)
 
@@ -223,12 +222,12 @@ plot.tempTraj(cAPT)
 ## 1) do not have good starting values, and                                                     ##
 ## 2) can't know (a priori) how long a sampler needs to reach likely regions of parameter space ##
 ## Moreover,                                                                                    ##
-## 3) Feedback between adaptive MH and APT can sometimes generate suprising dynamics            ##
+## 3) Feedback between adaptive MH and APT can sometimes generate surprising dynamics           ##
 ## So we should turn off adaption once the sampler is in the right region                       ##
 ## To test for this we can use a series of short run                                            ##
 ## Finally,                                                                                     ##
 ## 4) It can also be hard to know a priori what is a good thinning value                        ##
-## Here effective sample size calcualted from the pre-runs can help                             ##
+## Here effective sample size calculated from the pre-runs can help                             ##
 ##################################################################################################
 
 ## Reinitialise wrong2 with some wild values
@@ -322,7 +321,7 @@ codaAPT <- as.mcmc(samples)
 
 ## Plot 1: trajectories 
 dev.set()
-plot(codaAPT)                                ## Trajectories display improved mixing - but could be better
+plot(codaAPT)                  ## Trajectories display good mixing 
 ## Plot 2: autocorrelation
 dev.set()
 autocorr.plot(codaAPT)
@@ -334,4 +333,5 @@ plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
 dev.set()
 plot.tempTraj(cAPT)
 
-effectiveSize(codaAPT) ## Much healthier!
+(effectiveSize(codaAPT)) ## Much healthier!
+

@@ -4,7 +4,7 @@
 
 ##' Create an APT function, from an MCMCconf object
 ##' 
-##' Addapted from buildMCMC. Accepts a single required argument, which
+##' Adapted from buildMCMC. Accepts a single required argument, which
 ##' may be of class MCMCconf, or inherit from class modelBaseClass (a
 ##' NIMBLE model object).  Returns an APT function; see details
 ##' section.
@@ -14,9 +14,9 @@
 ##' 
 ##' The uncompiled MCMC function will have arguments:
 ##' 
-##' \code{niter}: The number of iterations to run the MCMC.
+##' \code{niter} The number of iterations to run the MCMC.
 ##' 
-##' \code{reset}: Boolean specifying whether to reset the internal MCMC
+##' \code{reset} Boolean specifying whether to reset the internal MCMC
 ##' sampling algorithms to their initial state (in terms of self-adapting
 ##' tuning parameters), and begin recording posterior sample chains anew.
 ##' Specifying \code{reset=FALSE} allows the MCMC algorithm to continue running
@@ -24,34 +24,34 @@
 ##' already existing sample chains. Generally, \code{reset=FALSE} should only
 ##' be used when the MCMC has already been run (default = TRUE).
 ##' 
-##' \code{resetTempering}: Boolean specifying whether to reset the
+##' \code{resetTempering} Boolean specifying whether to reset the
 ##' flexibility of the temperature ladder's adaptation process.
 ##' 
-##' \code{simulateAll}: Boolean specifying whether to simulate into all
+##' \code{simulateAll} Boolean specifying whether to simulate into all
 ##' stochastic nodes.  This will overwrite the current values in all stochastic
 ##' nodes (default = FALSE).
 ##' 
-##' \code{time}: Boolean specifying whether to record runtimes of the
+##' \code{time} Boolean specifying whether to record runtimes of the
 ##' individual internal MCMC samplers.  When \code{time=TRUE}, a vector of
 ##' runtimes (measured in seconds) can be extracted from the MCMC using the
 ##' method \code{mcmc$getTimes()} (default = FALSE).
 ##'
-##' \code{adaptTemps}: Boolean specifying whether the temperature
-##' ladder will be adaptated or not.
+##' \code{adaptTemps} Boolean specifying whether the temperature
+##' ladder will be adapted or not.
 ##'
-##' \code{printTemps}: Boolean specifying whether the temperature
+##' \code{printTemps} Boolean specifying whether the temperature
 ##' ladder will be printed during the MCMC. THe print frequency is
-##' controled by thinPrintTemps.
+##' controlled by thinPrintTemps.
 ##'
-##' \code{tuneTemper1}: Numeric tuning parameter of the adaptation
+##' \code{tuneTemper1} Numeric tuning parameter of the adaptation
 ##' process of the temperature ladder. See source code for
 ##' buildAPT. Defaults to 10.
 ##' 
-##' \code{tuneTemper2}: Numeric tuning parameter of the adaptation
+##' \code{tuneTemper2} Numeric tuning parameter of the adaptation
 ##' process of the temperature ladder. See source code for
 ##' buildAPT. Defaults to 1.
 ##' 
-##' \code{progressBar}: Boolean specifying whether to display a progress bar
+##' \code{progressBar} Boolean specifying whether to display a progress bar
 ##' during MCMC execution (default = TRUE).  The progress bar can be
 ##' permanently disabled by setting the system option
 ##' \code{nimbleOptions(MCMCprogressBar = FALSE)}.
@@ -75,17 +75,22 @@
 ##' Alternatively, \code{MCMCconf} may a NIMBLE model object, in which case an
 ##' MCMC function corresponding to the default MCMC configuration for this
 ##' model is returned.
+##' @param Temps A numeric vector giving the initial temperature ladder. 
+##' @param monitorTmax A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitorring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exaclty the same nodes) for T=Tmax.
+##' @param ULT A numberic value (default = 1E6) that provides an upper limit to temperature during APT. 
+##' @param thinPrintTemps A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10. 
+##' 
 ##' @param ... Additional arguments to be passed to \code{configureMCMC} if
 ##' \code{conf} is a NIMBLE model object
-##' @section Calculating WAIC:
-##' 
+## ##' @section Calculating WAIC:
+## ##' 
 ## ##' After the MCMC has been run, calling the \code{calculateWAIC()} method of
 ## ##' the MCMC object will return the WAIC for the model, calculated using the
 ## ##' posterior samples from the MCMC run.
 ## ##' 
 ## ##' \code{calculateWAIC()} has a single arugment:
 ## ##' 
-## ##' \code{nburnin}: The number of iterations to subtract from the beginning of
+## ##' \code{nburnin} The number of iterations to subtract from the beginning of
 ## ##' the posterior samples of the MCMC object for WAIC calculation.  Defaults to
 ## ##' 0.
 ## ##' 
@@ -112,9 +117,12 @@
 ##' Cmodel <- compileNimble(Rmodel)
 ##' Cmcmc <- compileNimble(Rmcmc, project=Rmodel)
 ##' Cmcmc$run(nIter, reset=TRUE, resetTempering=TRUE, adaptTempts=TRUE, printTemps=TRUE, progressBar=FALSE)
+##' plot.tempTraj(Cmcmc)  ## Plots the trajectories of the temperature ladder
 ##' Cmcmc$run(nIter, reset=FALSE, resetTempering=FALSE, adaptTempts=FALSE, printTemps=FALSE, progressBar=TRUE)
 ##' samples <- tail(as.matrix(Cmcmc$mvSamples), n=nIter)
-##' head(samples)
+##' summary(samples)
+##' samplesTM <- tail(as.matrix(Cmcmc$mvSamplesTmax), n=nIter)
+##' summary(samplesTM)
 ## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)
 ##' }
 ##' @export 

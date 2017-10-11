@@ -7,4 +7,6 @@
 #' 
 #' @seealso \url{https://r-nimble.org/}
 #' @docType package
+## #' @import nimble
+## #' @useDynLib 
 NULL

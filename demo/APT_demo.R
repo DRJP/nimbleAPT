@@ -5,14 +5,33 @@
 ##################################################################################################################
 options(width=400)
 
-# library(NimbleSnippets)
-library(nimble)
-library(coda)
-source("~/nimbleProject/nimble-snippets/R/APT_build.R")
-source("~/nimbleProject/nimble-snippets/R/APT_functions.R")
-source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
-## BUG HERE: buildAPT works if we source the .R files above, but fails if we load them via library(NimbleSnippets)
-##           Surely some kind of environment issue.
+usePackage <- TRUE ## FALSE
+if (usePackage) {
+    ## THIS FAILS
+    library(nimble)    
+    library(NimbleSnippets)
+    library(coda)
+## rm(list=ls()[grep("sampler", ls())])
+## source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
+## source("~/nimbleProject/nimble-snippets/R/APT_build.R")
+    print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
+    print(environment())
+    print(environment(buildMCMC)) ## <environment: 0x89a4f50>
+    print(environment(buildAPT))  ## <environment: 0x5ba1398>
+} else {
+    ## THIS WORKS
+    library(nimble)
+    library(coda)
+    source("~/nimbleProject/nimble-snippets/R/APT_build.R")
+    source("~/nimbleProject/nimble-snippets/R/APT_functions.R")
+    source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
+    print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
+    print(environment())
+    print(environment(buildMCMC)) ## <environment: 0x89a4f50>
+    print(environment(buildAPT))  ## <environment: 0x5ba1398>
+}
+
+
 
 #############################
 ## Set up graphics devices ##
@@ -168,7 +187,7 @@ apt$getMonitors2()
 #################################################
 MCMC  <- buildMCMC(mcmc)
 cMCMC <- compileNimble(MCMC)
-##debug(buildAPT)
+## undebug(buildAPT)
 APT   <- buildAPT(apt, Temps=1:7, monitorTmax=TRUE) 
 cAPT  <- compileNimble(APT)
 
@@ -214,7 +233,7 @@ par(mfrow=c(1,1))
 plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
 ## Plot 4: temperature ladder trajectories
 dev.set()
-plot.tempTraj(cAPT)
+plotTempTraj(cAPT)
 
 
 ##################################################################################################
@@ -272,7 +291,7 @@ while(ii==0 | meanL > meanL_previous + 2) {
     samples   <- tail(as.matrix(cAPT$mvSamples), floor(nIter/THIN))
     ## Plot 1: temperature ladder trajectories
     dev.set()
-    plot.tempTraj(cAPT)
+    plotTempTraj(cAPT)
     ## Plot 2: sigma0~theta0
     dev.set()
     par(mfrow=c(1,1))
@@ -331,7 +350,7 @@ par(mfrow=c(1,1))
 plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
 ## Plot 4: temperature ladder trajectories
 dev.set()
-plot.tempTraj(cAPT)
+plotTempTraj(cAPT)
 
 (effectiveSize(codaAPT)) ## Much healthier!
 

@@ -125,7 +125,8 @@
 ##' summary(samplesTM)
 ## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)
 ##' }
-##' @export 
+#' @import nimble
+#' @export 
 buildAPT <- nimbleFunction(
     setup = function(conf,                ## As for buildMCMC 
                      Temps,               ## Vector of temperatures. Typically, lowest temperature should be 1.
@@ -426,18 +427,18 @@ buildAPT <- nimbleFunction(
 )
 
 
-# This is a function that will weed out missing indices from the monitors
-processMonitorNames <- function(model, nodes){
-	isLogProbName <- grepl('logProb', nodes)
-	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])
-	origLogProbNames <- nodes[isLogProbName]
-	expandedLogProbNames <- character()
-	if(length(origLogProbNames) > 0){
-		nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
-		expandedLogProbNames <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
-	}
-	return( c(expandedNodeNames, expandedLogProbNames) )
-}
+## This is a function that will weed out missing indices from the monitors
+## processMonitorNames <- function(model, nodes){
+## 	isLogProbName <- grepl('logProb', nodes)
+## 	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])
+## 	origLogProbNames <- nodes[isLogProbName]
+## 	expandedLogProbNames <- character()
+## 	if(length(origLogProbNames) > 0){
+## 		nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
+## 		expandedLogProbNames <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
+## 	}
+## 	return( c(expandedNodeNames, expandedLogProbNames) )
+## }
 
 
 

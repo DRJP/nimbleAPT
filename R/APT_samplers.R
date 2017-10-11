@@ -4,6 +4,7 @@
 
 #' @rdname samplers
 #' @export
+#' @import nimble
 sampler_APT <- nimbleFunctionVirtual(
     ## run = function(temperture=double(0, default=1)) {}, 
     methods = list(
@@ -20,6 +21,7 @@ sampler_APT <- nimbleFunctionVirtual(
 
 #' @rdname samplers
 #' @export
+#' @import nimble
 sampler_RW_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -135,6 +137,7 @@ sampler_RW_tempered <- nimbleFunction(
 
 #' @rdname samplers
 #' @export
+#' @import nimble
 sampler_RW_block_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -258,6 +261,7 @@ sampler_RW_block_tempered <- nimbleFunction(
 
 #' @rdname samplers
 #' @export
+#' @import nimble
 sampler_slice_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -361,6 +365,7 @@ sampler_slice_tempered <- nimbleFunction(
 
 #' @rdname samplers
 #' @export
+#' @import nimble
 sampler_RW_multinomial_tempered <- nimbleFunction( 
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {

@@ -8,8 +8,9 @@
 ##' @return A plot of the trajectories.
 ##' @author David Pleydell
 ##' @seealso An example is provided in the documentation of buildAPT.
+##' @import nimble
 ##' @export
-plot.tempTraj <- function(cAPT) {
+plotTempTraj <- function(cAPT) {
     traj <- cAPT$tempTraj
     nRow <- nrow(traj)
     nCol <- ncol(traj)

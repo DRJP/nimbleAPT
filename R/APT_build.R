@@ -423,7 +423,8 @@ buildAPT <- nimbleFunction(
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
         }
     ),
-    where = getLoadingNamespace()
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 

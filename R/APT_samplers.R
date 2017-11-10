@@ -127,7 +127,9 @@ sampler_RW_tempered <- nimbleFunction(
             timesAdapted  <<- 0
             gamma1        <<- 0
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -251,7 +253,9 @@ sampler_RW_block_tempered <- nimbleFunction(
             timesAdapted       <<- 0
             my_calcAdaptationFactor$reset()
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -355,7 +359,9 @@ sampler_slice_tempered <- nimbleFunction(
             timesAdapted <<- 0
             sumJumps     <<- 0
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -502,7 +508,9 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
             ENSwapDeltaMatrix <<- Ones
             RescaleThreshold  <<- 0.2 * Ones
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 

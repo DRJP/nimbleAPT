@@ -1,5 +1,5 @@
 * Trying with and without a bug fix with where siggested on nimble-users
-** TODO WITHOUT SUGGESTED FIX  -  USE BRANCH "whereBugged"
+** WITHOUT SUGGESTED FIX  -  USE BRANCH "whereBugged"
 *** R CMD check gives
     buildAPT: no visible binding for global variable ‘sampler_APT’
 *** buildAPT in APT_demo_DEBUG.R gives
@@ -8,9 +8,12 @@
 ** WITH SUGGESTED FIX  -  USE BRANCH "suggestedFix"
 *** This does enable the problem line in APT_demo_DEBUG to run
 *** BUT...
-*** roxygenize() now gives
+*** roxygenize() then started giving 
     Error in assign(mname, def, where) : 
       cannot add bindings to a locked environment
+** I added "methods" to some @import arguments and roxygenize() started giving 
+    Error in assignClassDef(Class, classDef, where) : 
+      class “nfRefClass_NimbleSnippets43” has a locked definition in package ‘NimbleSnippets’
 * Adding nimble in DESCRIPTION is important
 ** Without
 > roxygenize()

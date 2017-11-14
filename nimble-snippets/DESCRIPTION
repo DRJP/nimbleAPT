@@ -7,5 +7,5 @@ Author: David Pleydell
 Maintainer: <david.pleydell@inra.fr>
 Description: Contains functions for adaptive parallel tempering (APT).
 License: BSD_3_clause + file LICENSE 
-Depends: R (>= 3.1.2), nimble
+Depends: R (>= 3.1.2), nimble, methods
 RoxygenNote: 6.0.1

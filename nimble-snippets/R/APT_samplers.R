@@ -14,7 +14,7 @@ sampler_APT <- nimbleFunctionVirtual(
     )
 )
 
-globalVariables(sampler_APT)
+
 
 ####################################################################
 ### scalar RW sampler with normal proposal distribution ############

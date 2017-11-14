@@ -14,6 +14,7 @@
 ** I added "methods" to some @import arguments and roxygenize() started giving 
     Error in assignClassDef(Class, classDef, where) : 
       class “nfRefClass_NimbleSnippets43” has a locked definition in package ‘NimbleSnippets’
+** It may be possible to use roxygenise without the where fix and the swap the where arguments.
 * Adding nimble in DESCRIPTION is important
 ** Without
 > roxygenize()

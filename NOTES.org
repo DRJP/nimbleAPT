@@ -1,3 +1,13 @@
+* Trying with and without a bug fix with where siggested on nimble-users
+** WITHOUT SUGGESTED FIX
+*** branch whereBugged
+*** R CMD check gives 
+    buildAPT: no visible binding for global variable ‘sampler_APT’
+*** buildAPT in APT_demo_DEBUG.R gives
+    Error in getClass(Class, where = topenv(parent.frame())) : 
+  “nfRefClass_R_GlobalEnv45” is not a defined class
+** WITH SUGGESTED FIX
+*** Use a new branch
 * Adding nimble in DESCRIPTION is important
 ** Without
 > roxygenize()

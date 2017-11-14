@@ -103,28 +103,30 @@
 ## ##' \eqn{p(y|theta)} will be simulated from the posterior samples of
 ## ##' \eqn{theta}.
 ##' @author David Pleydell (adapted from code by Daniel Turek).
-##' @examples
-##' 
-##' \dontrun{
-##' code <- nimbleCode({
-##'     mu ~ dnorm(0, 1)
-##'     x ~ dnorm(mu, 1)
-##' })
-##' Rmodel <- nimbleModel(code)
-##' conf <- configureMCMC(Rmodel)
-##' nIter <- 1E5
-##' Rmcmc <- buildAPT(conf, Temps=1:10, monitorTmax=TRUE, thinPrintTemps=nIter/10)
-##' Cmodel <- compileNimble(Rmodel)
-##' Cmcmc <- compileNimble(Rmcmc, project=Rmodel)
-##' Cmcmc$run(nIter, reset=TRUE, resetTempering=TRUE, adaptTempts=TRUE, printTemps=TRUE, progressBar=FALSE)
-##' plot.tempTraj(Cmcmc)  ## Plots the trajectories of the temperature ladder
-##' Cmcmc$run(nIter, reset=FALSE, resetTempering=FALSE, adaptTempts=FALSE, printTemps=FALSE, progressBar=TRUE)
-##' samples <- tail(as.matrix(Cmcmc$mvSamples), n=nIter)
-##' summary(samples)
-##' samplesTM <- tail(as.matrix(Cmcmc$mvSamplesTmax), n=nIter)
-##' summary(samplesTM)
-## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)
-##' }
+####################################################################################################################
+## ##' @examples                                                                                                  ##
+## ##'                                                                                                            ##
+## ##' \dontrun{                                                                                                  ##
+## ##' code <- nimbleCode({                                                                                       ##
+## ##'     mu ~ dnorm(0, 1)                                                                                       ##
+## ##'     x ~ dnorm(mu, 1)                                                                                       ##
+## ##' })                                                                                                         ##
+## ##' Rmodel <- nimbleModel(code)                                                                                ##
+## ##' conf <- configureMCMC(Rmodel)                                                                              ##
+## ##' nIter <- 1E5                                                                                               ##
+## ##' Rmcmc <- buildAPT(conf, Temps=1:10, monitorTmax=TRUE, thinPrintTemps=nIter/10)                             ##
+## ##' Cmodel <- compileNimble(Rmodel)                                                                            ##
+## ##' Cmcmc <- compileNimble(Rmcmc, project=Rmodel)                                                              ##
+## ##' Cmcmc$run(nIter, reset=TRUE, resetTempering=TRUE, adaptTempts=TRUE, printTemps=TRUE, progressBar=FALSE)    ##
+## ##' plot.tempTraj(Cmcmc)  ## Plots the trajectories of the temperature ladder                                  ##
+## ##' Cmcmc$run(nIter, reset=FALSE, resetTempering=FALSE, adaptTempts=FALSE, printTemps=FALSE, progressBar=TRUE) ##
+## ##' samples <- tail(as.matrix(Cmcmc$mvSamples), n=nIter)                                                       ##
+## ##' summary(samples)                                                                                           ##
+## ##' samplesTM <- tail(as.matrix(Cmcmc$mvSamplesTmax), n=nIter)                                                 ##
+## ##' summary(samplesTM)                                                                                         ##
+## ## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)                                                             ##
+## ##' }                                                                                                          ##
+####################################################################################################################
 #' @import nimble
 #' @export 
 buildAPT <- nimbleFunction(

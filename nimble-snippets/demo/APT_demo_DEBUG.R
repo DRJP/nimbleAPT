@@ -138,9 +138,9 @@ APT <- buildAPT(apt, Temps=1:7, monitorTmax=TRUE)
 ################################################
 ## THE HACK: source the R files and try again ##
 ################################################
-packDir <- find.package("NimbleSnippets")
-source(paste0(packDir, "/APT_samplers.R"))
-source(paste0(packDir, "/APT_build.R"))
+(packDir <- "~/nimbleProject/nimble-snippets/nimble-snippets") ##find.package("NimbleSnippets"))
+source(paste0(packDir, "/R/APT_samplers.R"))
+source(paste0(packDir, "/R/APT_build.R"))
 
 
 ###################################
@@ -169,7 +169,7 @@ cAPT <- compileNimble(APT)
 ###############
 ## APT in C ##
 ###############
-nIter   <- 1E5
+nIter   <- 1E4
 cAPT$thinPrintTemps <- floor(nIter/10)       ## Limits printing temperature ladder to 10 lines
 cAPT$run(nIter, printTemps=TRUE, progressBar=FALSE)
 samples <- as.matrix(cAPT$mvSamples)

@@ -1,6 +1,5 @@
 * Trying with and without a bug fix with where siggested on nimble-users
 ** WITHOUT SUGGESTED FIX  -  USE BRANCH "whereBugged"
-*** branch whereBugged
 *** R CMD check gives 
     buildAPT: no visible binding for global variable ‘sampler_APT’
 *** buildAPT in APT_demo_DEBUG.R gives

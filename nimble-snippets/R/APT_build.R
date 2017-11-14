@@ -427,6 +427,7 @@ buildAPT <- nimbleFunction(
     ),
     ## where = getLoadingNamespace()
     where = getNamespace("NimbleSnippets")
+    ## where = getNamespace("nimble")
 )
 
 

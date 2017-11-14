@@ -5,8 +5,9 @@
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @import methods
 sampler_APT <- nimbleFunctionVirtual(
-    ## run = function(temperture=double(0, default=1)) {}, 
+    ## run = function(temperture=double(0, default=1)) {},
     methods = list(
         setTemp           = function(temp = double()) {},
         ## turnOffAdaptation = function() {},
@@ -131,6 +132,7 @@ sampler_RW_tempered <- nimbleFunction(
     ),
     ## where = getLoadingNamespace()
     where = getNamespace("NimbleSnippets")
+    ## where = getNamespace("nimble")
 )
 
 
@@ -257,6 +259,7 @@ sampler_RW_block_tempered <- nimbleFunction(
     ),
     ## where = getLoadingNamespace()
     where = getNamespace("NimbleSnippets")
+    ## where = getNamespace("nimble")
 )
 
 
@@ -363,6 +366,7 @@ sampler_slice_tempered <- nimbleFunction(
     ),
     ## where = getLoadingNamespace()
     where = getNamespace("NimbleSnippets")
+    ## where = getNamespace("nimble")
 )
 
 
@@ -512,6 +516,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
     ),
     ## where = getLoadingNamespace()
     where = getNamespace("NimbleSnippets")
+    ## where = getNamespace("nimble")
 )
 
 

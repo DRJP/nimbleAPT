@@ -7,7 +7,7 @@
   “nfRefClass_R_GlobalEnv45” is not a defined class
 ** WITH SUGGESTED FIX  -  USE BRANCH "suggestedFix"
 *** This does enable the problem line in APT_demo_DEBUG to run
-**** BUT...
+*** BUT...
 *** roxygenize() now gives
     Error in assign(mname, def, where) : 
       cannot add bindings to a locked environment

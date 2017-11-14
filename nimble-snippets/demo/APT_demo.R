@@ -3,31 +3,31 @@
 ## Data is simulate with a simple "right" model.
 ## Parameters are then estimated for a "wrong" model, which resembles a misspecified mixture model. 
 ##################################################################################################################
-options(width=400)
 
-usePackage <- TRUE ## FALSE
-if (usePackage) {
-    ## THIS FAILS
-    ## library(nimble)    
-    ## library(NimbleSnippets)
-    library(coda)
-    print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
-    print(environment())
-    print(environment(buildMCMC)) ## <environment: 0x89a4f50>
-    print(environment(buildAPT))  ## <environment: 0x5ba1398>
-} else {
-    ## THIS WORKS
-    ## library(nimble)
-    library(coda)
-    packDir <- find.package("NimbleSnippets")
-    source(paste0(packDir, "/APT_functions.R"))
-    source(paste0(packDir, "/APT_samplers.R"))
-    source(paste0(packDir, "/APT_build.R"))
-    print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
-    print(environment())
-    print(environment(buildMCMC)) ## <environment: 0x89a4f50>
-    print(environment(buildAPT))  ## <environment: 0x5ba1398>
-}
+library(coda)
+library(NimbleSnippets)
+
+## usePackage <- TRUE ## FALSE
+## if (usePackage) {
+##     ## THIS FAILS
+##     ## library(nimble)    
+##     ## library(NimbleSnippets)
+##     print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
+##     print(environment())
+##     print(environment(buildMCMC)) ## <environment: 0x89a4f50>
+##     print(environment(buildAPT))  ## <environment: 0x5ba1398>
+## } else {
+##     ## THIS WORKS
+##     ## library(nimble)
+##     packDir <- find.package("NimbleSnippets")
+##     source(paste0(packDir, "/APT_functions.R"))
+##     source(paste0(packDir, "/APT_samplers.R"))
+##     source(paste0(packDir, "/APT_build.R"))
+##     print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
+##     print(environment())
+##     print(environment(buildMCMC)) ## <environment: 0x89a4f50>
+##     print(environment(buildAPT))  ## <environment: 0x5ba1398>
+## }
 
 
 

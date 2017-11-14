@@ -1,0 +1,17 @@
+* Adding nimble in DESCRIPTION is important
+** Without
+> roxygenize()
+Error in eval(expr, envir, enclos) : 
+  could not find function "nimbleFunction"
+** With
+> roxygenize()
+Loading required package: nimble
+nimble version 0.6-6 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit http://R-nimble.org.
+
+Attaching package: ‘nimble’
+
+The following object is masked from ‘package:stats’:
+
+    simulate

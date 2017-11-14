@@ -1,3 +1,3 @@
-APT_demo.R       A demo of adaptive parallel tempering in nimble.
-APT_demo_DEBUG.R A short version of the above for debugging the environment bug.
+APT_demo       A demo of adaptive parallel tempering in nimble.
+APT_demo_DEBUG A short version of the above for debugging the environment bug.
 

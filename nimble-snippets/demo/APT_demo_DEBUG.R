@@ -128,7 +128,7 @@ apt$getMonitors2()
 APT <- buildAPT(apt, Temps=1:7, monitorTmax=TRUE)  
 #################################################################
 ## Error in getClass(Class, where = topenv(parent.frame())) :  ##
-##   “nfRefClass_R_GlobalEnv45” is not a defined class         ##
+##   "nfRefClass_R_GlobalEnv45" is not a defined class         ##
 #################################################################
 
 

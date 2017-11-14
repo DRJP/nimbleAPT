@@ -3,9 +3,9 @@
 ######################################################################################################################
 
 library(coda)
-library(nimble)    
-library(NimbleSnippets) ## The bug is related to the namespace of functions in this package - it reports a class is not found
-                        ## Hack: if we source the R files of this package, so the functions are in .GlobalEnv, not error is returned
+## library(nimble)    
+## library(NimbleSnippets) ## The bug is related to the namespace of functions in this package - it reports a class is not found
+                           ## Hack: if we source the R files of this package, so the functions are in .GlobalEnv, not error is returned
 
 ####################
 ## Some Functions ##
@@ -138,8 +138,10 @@ APT <- buildAPT(apt, Temps=1:7, monitorTmax=TRUE)
 ################################################
 ## THE HACK: source the R files and try again ##
 ################################################
-source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
-source("~/nimbleProject/nimble-snippets/R/APT_build.R")
+packDir <- find.package("NimbleSnippets")
+source(paste0(packDir, "/APT_samplers.R"))
+source(paste0(packDir, "/APT_build.R"))
+
 
 ###################################
 ## Setup APT samplers for wrong2 ##

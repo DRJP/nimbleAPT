@@ -103,9 +103,6 @@ The \code{RW_multinomial} sampler accepts the following control list elements:
 }
 }
 
-\examples{
-
-}
 \references{
 Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., and Teller, E. (1953). Equation of State Calculations by Fast Computing Machines. \emph{The Journal of Chemical Physics}, 21(6), 1087-1092.
 

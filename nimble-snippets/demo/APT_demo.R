@@ -8,23 +8,21 @@ options(width=400)
 usePackage <- TRUE ## FALSE
 if (usePackage) {
     ## THIS FAILS
-    library(nimble)    
-    library(NimbleSnippets)
+    ## library(nimble)    
+    ## library(NimbleSnippets)
     library(coda)
-## rm(list=ls()[grep("sampler", ls())])
-## source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
-## source("~/nimbleProject/nimble-snippets/R/APT_build.R")
     print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
     print(environment())
     print(environment(buildMCMC)) ## <environment: 0x89a4f50>
     print(environment(buildAPT))  ## <environment: 0x5ba1398>
 } else {
     ## THIS WORKS
-    library(nimble)
+    ## library(nimble)
     library(coda)
-    source("~/nimbleProject/nimble-snippets/R/APT_build.R")
-    source("~/nimbleProject/nimble-snippets/R/APT_functions.R")
-    source("~/nimbleProject/nimble-snippets/R/APT_samplers.R")
+    packDir <- find.package("NimbleSnippets")
+    source(paste0(packDir, "/APT_functions.R"))
+    source(paste0(packDir, "/APT_samplers.R"))
+    source(paste0(packDir, "/APT_build.R"))
     print(search()) ## [1] ".GlobalEnv" "package:coda" "package:nimble" "ESSR"  "package:stats" "package:graphics" "package:grDevices" "package:utils" "package:datasets" "package:methods" "Autoloads" "package:base"
     print(environment())
     print(environment(buildMCMC)) ## <environment: 0x89a4f50>

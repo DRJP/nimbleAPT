@@ -128,8 +128,8 @@ sampler_RW_tempered <- nimbleFunction(
             gamma1        <<- 0
         }
     ),
-    ## where = getLoadingNamespace()
-    where = getNamespace("NimbleSnippets")
+    where = getLoadingNamespace()
+    ## where = getNamespace("NimbleSnippets")
 )
 
 
@@ -254,8 +254,8 @@ sampler_RW_block_tempered <- nimbleFunction(
             my_calcAdaptationFactor$reset()
         }
     ),
-    ## where = getLoadingNamespace()
-    where = getNamespace("NimbleSnippets")
+    where = getLoadingNamespace()
+    ## where = getNamespace("NimbleSnippets")
 )
 
 
@@ -360,8 +360,8 @@ sampler_slice_tempered <- nimbleFunction(
             sumJumps     <<- 0
         }
     ),
-    ## where = getLoadingNamespace()
-    where = getNamespace("NimbleSnippets")
+    where = getLoadingNamespace()
+    ## where = getNamespace("NimbleSnippets")
 )
 
 
@@ -509,8 +509,8 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
             RescaleThreshold  <<- 0.2 * Ones
         }
     ),
-    ## where = getLoadingNamespace()
-    where = getNamespace("NimbleSnippets")
+    where = getLoadingNamespace()
+    ## where = getNamespace("NimbleSnippets")
 )
 
 

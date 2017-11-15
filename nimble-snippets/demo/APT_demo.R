@@ -208,9 +208,9 @@ dev.set()
 par(mfrow=c(1,1))
 plot(samples[,"theta0"],samples[,"sigma0"], xlab="theta0", ylab="sigma0")
 
-###############
+##############
 ## APT in C ##
-###############
+##############
 nIter   <- 1E5
 cAPT$thinPrintTemps <- floor(nIter/10)             ## Limits printing temperature ladder to 10 lines
 cAPT$run(nIter, printTemps=TRUE, progressBar=FALSE)

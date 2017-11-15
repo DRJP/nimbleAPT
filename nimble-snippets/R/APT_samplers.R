@@ -2,8 +2,12 @@
 ### virtual nimbleFunction template, included for ALL samplers #####
 ####################################################################
 
+#' @rdname samplers
+#' @export
+#' @import nimble
+#' @import methods
 sampler_APT <- nimbleFunctionVirtual(
-    ## run = function(temperture=double(0, default=1)) {}, 
+    ## run = function(temperture=double(0, default=1)) {},
     methods = list(
         setTemp           = function(temp = double()) {},
         ## turnOffAdaptation = function() {},
@@ -12,10 +16,14 @@ sampler_APT <- nimbleFunctionVirtual(
 )
 
 
+
 ####################################################################
 ### scalar RW sampler with normal proposal distribution ############
 ####################################################################
 
+#' @rdname samplers
+#' @export
+#' @import nimble
 sampler_RW_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -121,7 +129,9 @@ sampler_RW_tempered <- nimbleFunction(
             timesAdapted  <<- 0
             gamma1        <<- 0
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -129,6 +139,9 @@ sampler_RW_tempered <- nimbleFunction(
 ### block RW sampler with multi-variate normal proposal distribution ###
 ########################################################################
 
+#' @rdname samplers
+#' @export
+#' @import nimble
 sampler_RW_block_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -242,7 +255,9 @@ sampler_RW_block_tempered <- nimbleFunction(
             timesAdapted       <<- 0
             my_calcAdaptationFactor$reset()
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -250,6 +265,9 @@ sampler_RW_block_tempered <- nimbleFunction(
 ### slice sampler (discrete or continuous) #########################
 ####################################################################
 
+#' @rdname samplers
+#' @export
+#' @import nimble
 sampler_slice_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -343,7 +361,9 @@ sampler_slice_tempered <- nimbleFunction(
             timesAdapted <<- 0
             sumJumps     <<- 0
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
@@ -351,6 +371,9 @@ sampler_slice_tempered <- nimbleFunction(
 ### RW_multinomial sampler for multinomial distributions ##############################
 #######################################################################################
 
+#' @rdname samplers
+#' @export
+#' @import nimble
 sampler_RW_multinomial_tempered <- nimbleFunction( 
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
@@ -487,16 +510,17 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
             ENSwapDeltaMatrix <<- Ones
             RescaleThreshold  <<- 0.2 * Ones
         }
-    ), where = getLoadingNamespace()
+    ),
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")
 )
 
 
 #' APT Sampling Algorithms
 #'
-#' Details of the APT sampling algorithms adapted from NIMBLE's MCMC samplers.
+#' Details of the adaptive parallel tempering (APT) samplers adapted from Nimble's MCMC samplers.
 #'
 #' @param model (uncompiled) model on which the APT algorithm is to be run
-#' 
 #' @param mvSaved \code{modelValues} object to be used to store MCMC samples
 #' @param target node(s) on which the sampler will be used
 #' @param control named list that controls the precise behavior of the sampler, with elements specific to \code{samplertype}.  The default values for control list are specified in the setup code of each sampling algorithm.  Descriptions of each sampling algorithm, and the possible customizations for each sampler (using the \code{control} argument) appear below.
@@ -557,13 +581,11 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \item adaptInterval.  The interval on which to perform adaptation.  A minimum value of 100 is required. (default = 200)
 #' \item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler. 
 #' }
-#'
+#' 
 #' @name samplers
 #'
 #' @aliases sampler sampler_RW_tempered sampler_RW_block_tempered sampler_RW_multinomial_tempered sampler_slice_tempered
 #'
-#' @examples
-#' 
 #' @seealso \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{runMCMC}}
 #'
 #' @author David Pleydell (based on code from Daniel Turek)

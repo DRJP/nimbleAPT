@@ -2,6 +2,133 @@
 ## buildAPT was adapted from Nimble's buildMCMC to provide adaptive parallel tempering
 ######################################################################################
 
+##' Create an APT function, from an MCMCconf object
+##' 
+##' Adapted from buildMCMC. Accepts a single required argument, which
+##' may be of class MCMCconf, or inherit from class modelBaseClass (a
+##' NIMBLE model object).  Returns an APT function; see details
+##' section.
+##' 
+##' Calling buildAPT(conf,Temps,monitorTmax,ULT,thinPrintTemps) will
+##' produce an uncompiled (R) APT function object, say 'myAPT'.
+##' 
+##' The uncompiled MCMC function will have arguments:
+##' 
+##' \code{niter} The number of iterations to run the MCMC.
+##' 
+##' \code{reset} Boolean specifying whether to reset the internal MCMC
+##' sampling algorithms to their initial state (in terms of self-adapting
+##' tuning parameters), and begin recording posterior sample chains anew.
+##' Specifying \code{reset=FALSE} allows the MCMC algorithm to continue running
+##' from where it left off, appending additional posterior samples to the
+##' already existing sample chains. Generally, \code{reset=FALSE} should only
+##' be used when the MCMC has already been run (default = TRUE).
+##' 
+##' \code{resetTempering} Boolean specifying whether to reset the
+##' flexibility of the temperature ladder's adaptation process.
+##' 
+##' \code{simulateAll} Boolean specifying whether to simulate into all
+##' stochastic nodes.  This will overwrite the current values in all stochastic
+##' nodes (default = FALSE).
+##' 
+##' \code{time} Boolean specifying whether to record runtimes of the
+##' individual internal MCMC samplers.  When \code{time=TRUE}, a vector of
+##' runtimes (measured in seconds) can be extracted from the MCMC using the
+##' method \code{mcmc$getTimes()} (default = FALSE).
+##'
+##' \code{adaptTemps} Boolean specifying whether the temperature
+##' ladder will be adapted or not.
+##'
+##' \code{printTemps} Boolean specifying whether the temperature
+##' ladder will be printed during the MCMC. THe print frequency is
+##' controlled by thinPrintTemps.
+##'
+##' \code{tuneTemper1} Numeric tuning parameter of the adaptation
+##' process of the temperature ladder. See source code for
+##' buildAPT. Defaults to 10.
+##' 
+##' \code{tuneTemper2} Numeric tuning parameter of the adaptation
+##' process of the temperature ladder. See source code for
+##' buildAPT. Defaults to 1.
+##' 
+##' \code{progressBar} Boolean specifying whether to display a progress bar
+##' during MCMC execution (default = TRUE).  The progress bar can be
+##' permanently disabled by setting the system option
+##' \code{nimbleOptions(MCMCprogressBar = FALSE)}.
+##' 
+##' Samples corresponding to the \code{monitors} and \code{monitors2} from the
+##' MCMCconf are stored into the interval variables \code{mvSamples} and
+##' \code{mvSamples2}, respectively. These may be accessed and converted into R
+##' matrix objects via: \code{as.matrix(mcmc$mvSamples)}
+##' \code{as.matrix(mcmc$mvSamples2)}
+##' 
+##' The uncompiled (R) MCMC function may be compiled to a compiled MCMC object,
+##' taking care to compile in the same project as the R model object, using:
+##' \code{Cmcmc <- compileNimble(Rmcmc, project=Rmodel)}
+##' 
+##' The compiled function will function identically to the uncompiled object,
+##' except acting on the compiled model object.
+##' 
+##' @param conf An object of class MCMCconf that specifies the model, samplers,
+##' monitors, and thinning intervals for the resulting MCMC function.  See
+##' \code{configureMCMC} for details of creating MCMCconf objects.
+##' Alternatively, \code{MCMCconf} may a NIMBLE model object, in which case an
+##' MCMC function corresponding to the default MCMC configuration for this
+##' model is returned.
+##' @param Temps A numeric vector giving the initial temperature ladder. 
+##' @param monitorTmax A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitorring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exaclty the same nodes) for T=Tmax.
+##' @param ULT A numberic value (default = 1E6) that provides an upper limit to temperature during APT. 
+##' @param thinPrintTemps A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10. 
+##' 
+##' @param ... Additional arguments to be passed to \code{configureMCMC} if
+##' \code{conf} is a NIMBLE model object
+## ##' @section Calculating WAIC:
+## ##' 
+## ##' After the MCMC has been run, calling the \code{calculateWAIC()} method of
+## ##' the MCMC object will return the WAIC for the model, calculated using the
+## ##' posterior samples from the MCMC run.
+## ##' 
+## ##' \code{calculateWAIC()} has a single arugment:
+## ##' 
+## ##' \code{nburnin} The number of iterations to subtract from the beginning of
+## ##' the posterior samples of the MCMC object for WAIC calculation.  Defaults to
+## ##' 0.
+## ##' 
+## ##' The \code{calculateWAIC} method calculates the WAIC of the model that the
+## ##' MCMC was performed on. The WAIC (Watanabe, 2010) is calculated from
+## ##' Equations 5, 12, and 13 in Gelman (2014).  Note that the set of all
+## ##' parameters monitored by the mcmc object will be treated as \eqn{theta} for
+## ##' the purposes of e.g. Equation 5 from Gelman (2014).  All parameters
+## ##' downstream of the monitored parameters that are necessary to calculate
+## ##' \eqn{p(y|theta)} will be simulated from the posterior samples of
+## ##' \eqn{theta}.
+##' @author David Pleydell (adapted from code by Daniel Turek).
+####################################################################################################################
+## ##' @examples                                                                                                  ##
+## ##'                                                                                                            ##
+## ##' \dontrun{                                                                                                  ##
+## ##' code <- nimbleCode({                                                                                       ##
+## ##'     mu ~ dnorm(0, 1)                                                                                       ##
+## ##'     x ~ dnorm(mu, 1)                                                                                       ##
+## ##' })                                                                                                         ##
+## ##' Rmodel <- nimbleModel(code)                                                                                ##
+## ##' conf <- configureMCMC(Rmodel)                                                                              ##
+## ##' nIter <- 1E5                                                                                               ##
+## ##' Rmcmc <- buildAPT(conf, Temps=1:10, monitorTmax=TRUE, thinPrintTemps=nIter/10)                             ##
+## ##' Cmodel <- compileNimble(Rmodel)                                                                            ##
+## ##' Cmcmc <- compileNimble(Rmcmc, project=Rmodel)                                                              ##
+## ##' Cmcmc$run(nIter, reset=TRUE, resetTempering=TRUE, adaptTempts=TRUE, printTemps=TRUE, progressBar=FALSE)    ##
+## ##' plot.tempTraj(Cmcmc)  ## Plots the trajectories of the temperature ladder                                  ##
+## ##' Cmcmc$run(nIter, reset=FALSE, resetTempering=FALSE, adaptTempts=FALSE, printTemps=FALSE, progressBar=TRUE) ##
+## ##' samples <- tail(as.matrix(Cmcmc$mvSamples), n=nIter)                                                       ##
+## ##' summary(samples)                                                                                           ##
+## ##' samplesTM <- tail(as.matrix(Cmcmc$mvSamplesTmax), n=nIter)                                                 ##
+## ##' summary(samplesTM)                                                                                         ##
+## ## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)                                                             ##
+## ##' }                                                                                                          ##
+####################################################################################################################
+#' @import nimble
+#' @export 
 buildAPT <- nimbleFunction(
     setup = function(conf,                ## As for buildMCMC 
                      Temps,               ## Vector of temperatures. Typically, lowest temperature should be 1.
@@ -298,21 +425,23 @@ buildAPT <- nimbleFunction(
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
         }
     ),
-    where = getLoadingNamespace()
+    ## where = getLoadingNamespace()
+    where = getNamespace("NimbleSnippets")    
 )
 
 
-# This is a function that will weed out missing indices from the monitors
-processMonitorNames <- function(model, nodes){
-	isLogProbName <- grepl('logProb', nodes)
-	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])
-	origLogProbNames <- nodes[isLogProbName]
-	expandedLogProbNames <- character()
-	if(length(origLogProbNames) > 0){
-		nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
-		expandedLogProbNames <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
-	}
-	return( c(expandedNodeNames, expandedLogProbNames) )
-}
+## This is a function that will weed out missing indices from the monitors
+## processMonitorNames <- function(model, nodes){
+## 	isLogProbName <- grepl('logProb', nodes)
+## 	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])
+## 	origLogProbNames <- nodes[isLogProbName]
+## 	expandedLogProbNames <- character()
+## 	if(length(origLogProbNames) > 0){
+## 		nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
+## 		expandedLogProbNames <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
+## 	}
+## 	return( c(expandedNodeNames, expandedLogProbNames) )
+## }
+
 
 

@@ -1,11 +1,14 @@
 Package: NimbleSnippets
 Type: Package
 Title: A collection of functions and algorithms written in Nimble
-Version: 1.0.1
-Date: 2017-10-10
+Version: 1.0.2-alpha
+Date: 2017-17-11
 Author: David Pleydell
 Maintainer: <david.pleydell@inra.fr>
 Description: Contains functions for adaptive parallel tempering (APT).
-License: BSD_3_clause + file LICENSE 
-Depends: R (>= 3.1.2), nimble, methods
-RoxygenNote: 6.0.1
+License: BSD_3_clause + file LICENSE
+Depends:
+    R (>= 3.1.2),
+    nimble,
+    methods
+RoxygenNote: 5.0.1

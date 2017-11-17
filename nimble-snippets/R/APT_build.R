@@ -424,9 +424,9 @@ buildAPT <- nimbleFunction(
             ## Useful in R for exploring node values at each temp
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
         }
-    ),
+    )    ## ,
     ## where = getLoadingNamespace()
-    where = getNamespace("NimbleSnippets")    
+    ## where = getNamespace("NimbleSnippets")    
 )
 
 

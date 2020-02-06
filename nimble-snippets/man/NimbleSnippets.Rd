@@ -3,7 +3,6 @@
 \docType{package}
 \name{NimbleSnippets}
 \alias{NimbleSnippets}
-\alias{NimbleSnippets-package}
 \title{Nimble Snippets}
 \description{
 A collection of nimble functions.
@@ -11,7 +10,7 @@ A collection of nimble functions.
 \section{Adaptive parallel tempering (APT)}{
  Funtions for adaptive parallel tempering are provided. These were adapted from nimble's MCMC suite to enable APT specific features (i.e. an adaptive temperature ladder) to be included.
 }
+
 \seealso{
 \url{https://r-nimble.org/}
 }
-

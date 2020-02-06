@@ -1,7 +1,7 @@
 Package: NimbleSnippets
 Type: Package
 Title: A collection of functions and algorithms written in Nimble
-Version: 1.0.2-alpha
+Version: 1.0.2
 Date: 2017-17-11
 Author: David Pleydell
 Maintainer: <david.pleydell@inra.fr>
@@ -11,4 +11,4 @@ Depends:
     R (>= 3.1.2),
     nimble,
     methods
-RoxygenNote: 5.0.1
+RoxygenNote: 7.0.2

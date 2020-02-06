@@ -4,8 +4,7 @@
 \alias{buildAPT}
 \title{Create an APT function, from an MCMCconf object}
 \usage{
-buildAPT(conf, Temps, monitorTmax = TRUE, ULT = 1e+06, thinPrintTemps = 1,
-  ...)
+buildAPT(conf, Temps, monitorTmax = TRUE, ULT = 1e+06, thinPrintTemps = 1, ...)
 }
 \arguments{
 \item{conf}{An object of class MCMCconf that specifies the model, samplers,
@@ -96,4 +95,3 @@ except acting on the compiled model object.
 \author{
 David Pleydell (adapted from code by Daniel Turek).
 }
-

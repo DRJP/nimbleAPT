@@ -18,10 +18,9 @@ Plot the trajectories of a temperature ladder of an adaptive parallel tempering 
 \details{
 Returns two plots, one with T~iterations, the other log10(T)~iterations.
 }
-\author{
-David Pleydell
-}
 \seealso{
 An example is provided in the documentation of buildAPT.
 }
-
+\author{
+David Pleydell
+}

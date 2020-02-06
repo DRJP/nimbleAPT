@@ -12,5 +12,6 @@ Contents
 [![DOI](https://zenodo.org/badge/106051349.svg)](https://zenodo.org/badge/latestdoi/106051349)
 
 ## Installation
-It may be possible to install from github using the remotes package, i.e. something along the lines of the following (buggy) code
+The package can be installed from github using the R package 'remotes' as follows.
 remotes::install_git(url="https://github.com/DRJP/nimble-snippets.git", subdir="nimble-snippets")
+

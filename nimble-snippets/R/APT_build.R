@@ -431,6 +431,9 @@ buildAPT <- nimbleFunction(
 
 
 ## This is a function that will weed out missing indices from the monitors
+
+##' @import nimble
+##' @export
 processMonitorNames <- function(model, nodes){
 	isLogProbName <- grepl('logProb', nodes)
 	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])

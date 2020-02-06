@@ -1,7 +1,7 @@
 Nimble Snippets
 ===============
 
-A collection of functions and algorithms written in nimble. 
+A collection of functions and algorithms written in nimble.
 
 Contents
 --------
@@ -14,4 +14,3 @@ Contents
 ## Installation
 The package can be installed from github using the R package 'remotes' as follows.
 remotes::install_git(url="https://github.com/DRJP/nimble-snippets.git", subdir="nimble-snippets")
-

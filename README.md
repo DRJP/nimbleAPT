@@ -1,7 +1,7 @@
 Nimble Snippets
 ===============
 
-A collection of functions and algorithms written in nimble.
+A collection of functions and algorithms written in nimble. 
 
 Contents
 --------

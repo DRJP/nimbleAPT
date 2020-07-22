@@ -28,12 +28,13 @@ sampler_RW_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## Control list extraction
-        logScale      <- if(!is.null(control$log))           control$log           else FALSE
-        reflective    <- if(!is.null(control$reflective))    control$reflective    else FALSE
-        adaptive      <- if(!is.null(control$adaptive))      control$adaptive      else TRUE
-        adaptInterval <- if(!is.null(control$adaptInterval)) control$adaptInterval else 200
-        scale         <- if(!is.null(control$scale))         control$scale         else 1
-        temperPriors  <- if(!is.null(control$temperPriors))  control$temperPriors  else stop("control$temperPriors unspecified in sampler_RW_tempered")
+        logScale            <- if(!is.null(control$log))           control$log           else FALSE
+        reflective          <- if(!is.null(control$reflective))    control$reflective    else FALSE
+        adaptive            <- if(!is.null(control$adaptive))      control$adaptive      else TRUE
+        adaptInterval       <- if(!is.null(control$adaptInterval)) control$adaptInterval else 200
+        adaptFactorExponent <- if(!is.null(control$adaptFactorExponent)) control$adaptFactorExponent else 0.8
+        scale               <- if(!is.null(control$scale))         control$scale         else 1
+        temperPriors        <- if(!is.null(control$temperPriors))  control$temperPriors  else stop("control$temperPriors unspecified in sampler_RW_tempered")
         ## logScale      <- control$log
         ## reflective    <- control$reflective
         ## adaptive      <- control$adaptive
@@ -58,6 +59,8 @@ sampler_RW_tempered <- nimbleFunction(
         if(length(targetAsScalar) > 1) stop('cannot use RW sampler on more than one target; try RW_block sampler')
         if(model$isDiscrete(target))   stop('cannot use RW sampler on discrete-valued target; try slice sampler')
         if(logScale & reflective)      stop('cannot use reflective RW sampler on a log scale (i.e. with options log=TRUE and reflective=TRUE')
+        if(adaptFactorExponent < 0)    stop('cannot use RW sampler with adaptFactorExponent control parameter less than 0')
+        if(scale < 0)                  stop('cannot use RW sampler with scale control parameter less than 0')
         ## Initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is just a hack. Only 1st element is used.
     },  
@@ -111,7 +114,7 @@ sampler_RW_tempered <- nimbleFunction(
             if(timesRan %% adaptInterval == 0) {
                 acceptanceRate <- timesAccepted / timesRan
                 timesAdapted <<- timesAdapted + 1
-                gamma1 <<- 1/((timesAdapted + 3)^0.8)
+                gamma1 <<- 1/((timesAdapted + 3)^adaptFactorExponent)
                 gamma2 <- 10 * gamma1
                 adaptFactor <- exp(gamma2 * (acceptanceRate - optimalAR))
                 scale <<- scale * adaptFactor
@@ -146,12 +149,13 @@ sampler_RW_block_tempered <- nimbleFunction(
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
-        adaptive       <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
-        adaptScaleOnly <- if(!is.null(control$adaptScaleOnly)) control$adaptScaleOnly else FALSE
-        adaptInterval  <- if(!is.null(control$adaptInterval))  control$adaptInterval  else 200
-        scale          <- if(!is.null(control$scale))          control$scale          else 1
-        propCov        <- if(!is.null(control$propCov))        control$propCov        else 'identity'
-        temperPriors   <- if(!is.null(control$temperPriors))   control$temperPriors   else stop("control$temperPriors unspecified in sampler_RW_block_tempered")
+        adaptive            <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
+        adaptScaleOnly      <- if(!is.null(control$adaptScaleOnly)) control$adaptScaleOnly else FALSE
+        adaptInterval       <- if(!is.null(control$adaptInterval))  control$adaptInterval  else 200
+        adaptFactorExponent <- if(!is.null(control$adaptFactorExponent)) control$adaptFactorExponent else 0.8
+        scale               <- if(!is.null(control$scale))          control$scale          else 1
+        propCov             <- if(!is.null(control$propCov))        control$propCov        else 'identity'
+        temperPriors        <- if(!is.null(control$temperPriors))   control$temperPriors   else stop("control$temperPriors unspecified in sampler_RW_block_tempered")
         ## adaptive       <- control$adaptive
         ## adaptScaleOnly <- control$adaptScaleOnly
         ## adaptInterval  <- control$adaptInterval
@@ -181,7 +185,7 @@ sampler_RW_block_tempered <- nimbleFunction(
         ## nested function and function list definitions
         my_setAndCalculateDiff  <- setAndCalculateDiff(model, target)
         my_decideAndJump        <- decideAndJump(model, mvSaved, calcNodes)
-        my_calcAdaptationFactor <- calcAdaptationFactor(d)
+        my_calcAdaptationFactor <- calcAdaptationFactor(d, adaptFactorExponent)
         ## checks
         if(class(propCov)      != 'matrix')  stop('propCov must be a matrix\n')
         if(class(propCov[1,1]) != 'numeric') stop('propCov matrix must be numeric\n')

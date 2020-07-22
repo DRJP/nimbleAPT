@@ -163,6 +163,8 @@ mcmc$addMonitors2(allLogProbs)
 mcmc$getMonitors()
 mcmc$getMonitors2()
 
+print(mcmc)
+
 ###################################
 ## Setup APT samplers for wrong2 ##
 ###################################
@@ -241,7 +243,7 @@ plotTempTraj(cAPT)
 ## Moreover,                                                                                    ##
 ## 3) Feedback between adaptive MH and APT can sometimes generate surprising dynamics           ##
 ## So we should turn off adaption once the sampler is in the right region                       ##
-## To test for this we can use a series of short run                                            ##
+## To test for this we can use a series of short runs                                           ##
 ## Finally,                                                                                     ##
 ## 4) It can also be hard to know a priori what is a good thinning value                        ##
 ## Here effective sample size calculated from the pre-runs can help                             ##
@@ -301,7 +303,7 @@ while(ii==0 | meanL > meanL_previous + 2) {
                                   reset          = TRUE,  ## Resets the adaptive MCMC. Let's proposal distributions change direction if required.
                                   adaptTemps     = FALSE, ## Prevents temperature ladder adaptation (to avoid volatile behaviour when counter is reset)
                                   resetTempering = TRUE,  ## Resets counter used in temperature ladder adaptation. i.e. counter will be at nIter when adaptation is turned on in step 1 
-                                  printTemps     = FALSE,  ## Will print once only
+                                  printTemps     = FALSE, ## Will print once only
                                   progressBar    = TRUE, 
                                   tuneTemper1=TuneTemper[1], tuneTemper2=TuneTemper[2]))
     ## Update meanL

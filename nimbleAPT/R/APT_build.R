@@ -2,6 +2,10 @@
 ## buildAPT was adapted from Nimble's buildMCMC to provide adaptive parallel tempering
 ######################################################################################
 
+
+
+
+
 ##' Create an APT function, from an MCMCconf object
 ##' 
 ##' Adapted from buildMCMC. Accepts a single required argument, which
@@ -173,10 +177,23 @@ buildAPT <- nimbleFunction(
             }
         }
         ##
+        ## A function to weed out missing indices from the monitors
+        processMonitorNames <- function(model, nodes){
+            isLogProbName        <- grepl('logProb', nodes)
+            expandedNodeNames    <- model$expandNodeNames(nodes[!isLogProbName])
+            origLogProbNames     <- nodes[isLogProbName]
+            expandedLogProbNames <- character()
+            if (length(origLogProbNames) > 0) {
+                nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
+                expandedLogProbNames     <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
+            }
+            return( c(expandedNodeNames, expandedLogProbNames) )
+        }
+        ##
         thin              <- conf$thin
         thin2             <- conf$thin2
         mvSamplesConf     <- conf$getMvSamplesConf(1)
-        mvSamples2Conf    <- conf$getMvSamplesConf(2)
+        mvSamples2Conf    <- conf$getMvSamplesConf(2)        
         monitors          <- processMonitorNames(model, conf$monitors)
         monitors2         <- processMonitorNames(model, conf$monitors2)
         mvSamples         <- modelValues(mvSamplesConf)   ## For storing MCMC output (T=1)
@@ -428,23 +445,5 @@ buildAPT <- nimbleFunction(
     ## where = getLoadingNamespace()
     ## where = getNamespace("NimbleSnippets")    
 )
-
-
-## This is a function that will weed out missing indices from the monitors
-
-##' @import nimble
-##' @export
-processMonitorNames <- function(model, nodes){
-	isLogProbName <- grepl('logProb', nodes)
-	expandedNodeNames <- model$expandNodeNames(nodes[!isLogProbName])
-	origLogProbNames <- nodes[isLogProbName]
-	expandedLogProbNames <- character()
-	if(length(origLogProbNames) > 0){
-		nodeName_fromLogProbName <- gsub('logProb_', '', origLogProbNames)
-		expandedLogProbNames <- model$modelDef$nodeName2LogProbName(nodeName_fromLogProbName)
-	}
-	return( c(expandedNodeNames, expandedLogProbNames) )
-}
-
 
 

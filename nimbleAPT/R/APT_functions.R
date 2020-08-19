@@ -9,6 +9,8 @@
 ##' @author David Pleydell
 ##' @seealso An example is provided in the documentation of buildAPT.
 ##' @import nimble
+##' @importFrom grDevices rainbow n2mfrow
+##' @importFrom graphics lines par plot
 ##' @export
 plotTempTraj <- function(cAPT) {
     traj <- cAPT$tempTraj

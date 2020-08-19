@@ -1,3 +1,9 @@
+**VERSION: 1.0.3**
+Changed package name to nimbleAPT.
+
+**VERSION: 1.0.2**
+Various bug fixes.
+
 **VERSION: 1.0.1**
 Now compatible with Nimble 0.6-6.
 Converted to Rpackage.

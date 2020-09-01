@@ -7,6 +7,29 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<!-- Add this vignette to the documentation via roxygen2::roxygenise() and  R CMD build -->
+
+This vignette assumes the reader is already familiar with using nimble to perform MCMC.
+
+The principal motivation of this package is that, when target posterior distributions are multimodal standard Markov chain Monte Carlo (MCMC) algorithms often perform badly.
+In these situations, standard algorithms often propose few, if any, jumps between modes, and can thus provide very poor approximation to the target posterior distribution.
+The nimbleAPT package permits nimble users to perform adaptive parallel tempering (APT) as a potential solution for sampling multimodal posterior distributions.
+
+Parallel tempering is an MCMC technique where the posterior likelihood of a Bayesian model is 'heated up' to various degrees.
+As temperature is increased, a likelihood will become flatter and this can greatly increase the probability and frequency of between-mode jumps. 
+In practice, a "temperature ladder" is established, MCMC is performed within each rung of the temperature ladder, and a special between-rung MCMC step is introduced so that parameter sets can move up and down the temperature ladder.
+Bayesian inference remains valid so long as it is made on the posterior samples of the unheated rung only.
+Adaptive parallel tempering algorithms automaticly tune the tempertures of the temperature ladder so that target acceptance rates for proposed between-rung jumps are achieved. 
+
+The nimbleAPT package provides the following...
+1. A buildAPT function: adapted from nimble's buildMCMC, this function sets up the APT algorithm, including between-rung steps and to adapt the temperature ladder adaptation.
+2. A set of samplers adapted from nimble's MCMC to include heating of the likelihood.
+
+
+
+
+
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,

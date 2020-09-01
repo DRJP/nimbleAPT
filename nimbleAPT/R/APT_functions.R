@@ -2,7 +2,7 @@
 ### Virtual nimbleFunction template, included for ALL samplers #####
 ####################################################################
 
-globalVariables(c("samplerAPT"))
+globalVariables(c("sampler_APT"))
 Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", unset = NA)
 
 
@@ -20,7 +20,7 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 #' @param control other control parameters
 #'
 #'
-#' @details APT samplers must include "contains = samplerAPT" and include a setTemp method
+#' @details APT samplers must include "contains = sampler_APT" and include a setTemp method
 #'
 #' @author David Pleydell
 #' 
@@ -28,9 +28,9 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 #' @import nimble
 #' @import methods
 #' @export 
-samplerAPT <- nimbleFunctionVirtual(
+sampler_APT <- nimbleFunctionVirtual(
     ## run = function(temperture=double(0, default=1)) {},
-    name = 'samplerAPT',
+    name = 'sampler_APT',
     methods = list(
         setTemp = function(temp = double()) {},
         ## turnOffAdaptation = function() {},
@@ -38,7 +38,7 @@ samplerAPT <- nimbleFunctionVirtual(
     )
 )
 
-### utils::globalVariables("samplerAPT")
+### utils::globalVariables("sampler_APT")
 
 
 ######################################################################################
@@ -192,7 +192,7 @@ buildAPT <- nimbleFunction(
         my_initializeModel <- initializeModel(model)
         mvSaved            <- modelValues(model)                   ## Used to restore model following rejection in MCMC
         nSamplersPerT      <- length(seq_along(conf$samplerConfs)) ## Nb. samplers / temp'
-        samplerFunctions   <- nimbleFunctionList(samplerAPT)
+        samplerFunctions   <- nimbleFunctionList(sampler_APT)
         ## Tempering related objects
         Temps        <- as.numeric(sort(Temps)) ## Ensures compiler knows Temps is not integer
         nTemps       <- length(Temps)           ## Number of temperatures for tempering
@@ -495,7 +495,7 @@ buildAPT <- nimbleFunction(
 #' @import nimble
 sampler_RW_tempered <- nimbleFunction(
     name = 'sampler_RW_tempered', 
-    contains = samplerAPT,
+    contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## Control list extraction
         logScale            <- if(!is.null(control$log))           control$log           else FALSE
@@ -616,7 +616,7 @@ sampler_RW_tempered <- nimbleFunction(
 #' @import nimble
 sampler_RW_block_tempered <- nimbleFunction(
     name = 'sampler_RW_block_tempered', 
-    contains = samplerAPT,
+    contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive            <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
@@ -743,7 +743,7 @@ sampler_RW_block_tempered <- nimbleFunction(
 #' @import nimble
 sampler_slice_tempered <- nimbleFunction(
     name = 'sampler_slice_tempered',
-    contains = samplerAPT,
+    contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive       <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
@@ -849,7 +849,7 @@ sampler_slice_tempered <- nimbleFunction(
 #' @import nimble
 sampler_RW_multinomial_tempered <- nimbleFunction(
     name = 'sampler_RW_multinomial_tempered',
-    contains = samplerAPT,
+    contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive      <- if(!is.null(control$adaptive))         control$adaptive      else TRUE
@@ -999,9 +999,9 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' @param target node(s) on which the sampler will be used
 #' @param control named list that controls the precise behavior of the sampler, with elements specific to \code{samplertype}.  The default values for control list are specified in the setup code of each sampling algorithm.  Descriptions of each sampling algorithm, and the possible customizations for each sampler (using the \code{control} argument) appear below.
 #'
-#' @section \code{samplerAPT}: base class for APT samplers
+#' @section \code{sampler_APT}: base class for APT samplers
 #'
-#' When you write a new sampler for use in a NIMBLE MCMC with APT, you must include \code{contains = samplerAPT}.
+#' When you write a new sampler for use in a NIMBLE MCMC with APT, you must include \code{contains = sampler_APT}.
 #'
 #' @section RW sampler:
 #'

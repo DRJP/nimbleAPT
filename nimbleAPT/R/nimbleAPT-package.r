@@ -1,0 +1,12 @@
+#' nimbleAPT
+#'
+#' A collection of nimble functions for adaptive parallele tempering.
+#'
+#' @name nimbleAPT
+#' @section Adaptive parallel tempering (APT) for nimble. Adapted from nimble's MCMC suite to enable APT specific features (i.e. an adaptive temperature ladder).
+#' 
+#' @seealso \url{https://r-nimble.org/}
+#' @docType package
+## #' @import nimble
+## #' @useDynLib 
+NULL

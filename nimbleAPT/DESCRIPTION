@@ -1,15 +1,19 @@
 Package: nimbleAPT
 Type: Package
-Title: Adaptive parallel tempering for Nimble models
+Title: Adaptive Parallel Tempering for Nimble Models
 Version: 1.0.3
 Encoding: UTF-8
 Date: 2020-19-08
 Author: David Pleydell
 Maintainer: David Pleydell <david.pleydell@inrae.fr>
 Description: Functions for adaptive parallel tempering (APT) with nimble models. The adaptive parallel tempering algorithm is based on Misajedow's 2013 and 2016 papers. The package was previously released under the name nimble-snippets.
-License: BSD_3_clause + file LICENSE
+License: BSD_3_clause + file LICENSE | GPL (>= 2)
 Depends:
     R (>= 3.1.2),
     nimble,
     methods
 RoxygenNote: 7.0.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

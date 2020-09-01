@@ -3,6 +3,8 @@
 ####################################################################
 
 globalVariables(c("samplerAPT"))
+Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", unset = NA)
+
 
 #' A virtual function to use as a contains argument when writing APT samplers
 #'

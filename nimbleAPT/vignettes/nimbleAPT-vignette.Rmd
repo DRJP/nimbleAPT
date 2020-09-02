@@ -7,6 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+ 
+
 <!-- Add this vignette to the documentation via roxygen2::roxygenise() and  R CMD build -->
 
 <!-- setwd("/home/pleydell/nimbleProject/nimble-snippets/nimbleAPT"); roxygen2::roxygenise() -->
@@ -46,10 +48,11 @@ knitr::opts_chunk$set(
 
 The following toy problem illustrates how classic MCMC algorithms can struggle to approximate multimodal posteriors. The true posterior distribution for centroids should have four modes, but as we will see, classic samplers can struggle to explore such a posterior distribution. 
 
-First, we create a nimble model with a multimodal posterior -- here there is no information in the data to remove uncertainty about the sign of the elements of centroids.
+First, we create a nimble model with a multimodal posterior. For this model there is no information in the data to remove uncertainty about the sign of the elements of centroids.
 
-```{r model}
+```{r model, fig.width=7, fig.height=7}
 library(nimbleAPT) # Also loads nimble
+library(coda)      # Loads coda
 help.start()
 
 bugsCode <- nimbleCode({
@@ -62,51 +65,59 @@ bugsCode <- nimbleCode({
     }
 })
 
-rModel <- nimbleModel(bugsCode,
-                      constants=list(nObs=100, cholCov=chol(diag(2))),
-                      inits=list(centroids=rep(-3, 2)))
-
-simulate(rModel, "y")
+nObs      <- 100
+centroids <- rep(-3, 2)
+covChol   <- chol(diag(2))
 
 rModel <- nimbleModel(bugsCode,
-                      constants=list(nObs=100, cholCov=chol(diag(2))),
+                      constants=list(nObs=nObs, cholCov=covChol),
+                      inits=list(centroids=centroids))
+```
+
+Now use the model to simulate some data and initialise/specify the model's data nodes.
+
+```{r sim, fig.width=7, fig.height=7}
+simulate(rModel, "y") ## Use model to simulate data 
+
+rModel <- nimbleModel(bugsCode,
+                      constants=list(nObs=nObs, cholCov=covChol),
                       data=list(y=rModel$y), 
-                      inits=list(centroids=rep(-3, 2)))
+                      inits=list(centroids=centroids))
 
 cModel <- compileNimble(rModel)
 
 plot(cModel$y, typ="p", xlab="", ylab="", xlim=c(-1,1)*max(cModel$y), ylim=c(-1,1)*max(cModel$y), pch=4)
 points(x=cModel$centroids[1], y=cModel$centroids[1], col="red", pch=4, cex=3)
-legend("topleft", c("centroids", "y"), col=c("red","black"), pch=4, cex=2)
+points(x=-cModel$centroids[1], y=cModel$centroids[1], col="red", pch=4, cex=3)
+points(x=cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
+points(x=-cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
+legend("topleft", c("posterior modes", "data"), col=c("red","black"), pch=4, cex=2)
 
 ```
 
-Now for some standard MCMC using nimble
 
+Now for some standard MCMC using nimble's default choice of samplers.
 
-```{r fitting1}
+```{r fitting1, fig.width=7, fig.height=7}
 
 simulate(cModel, "centroids")
 mcmcR <- buildMCMC(configureMCMC(cModel, nodes="centroids", monitors="centroids"), print=TRUE)
 
 mcmcC <- compileNimble(mcmcR)
 
-mcmcC$run(niter=11000)
+mcmcC$run(niter=15000)
 
-samples <- as.matrix(mcmcC$mvSamples)
+samples <- tail(as.matrix(mcmcC$mvSamples), 10000)
 summary(samples)
 
 plot(samples, xlab="", ylab="", typ="l", xlim=c(-1,1)*max(cModel$y), ylim=c(-1,1)*max(cModel$y))
-
 points(x=cModel$centroids[1], y=cModel$centroids[1], col="red", pch=4, cex=3)
 points(x=-cModel$centroids[1], y=cModel$centroids[1], col="red", pch=4, cex=3)
 points(x=cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
 points(x=-cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
-legend("topleft", legend="posterior modes", col="red", pch=4, bg="white")
+legend("topleft", legend=c("posterior modes","jumps"), col=c("red","black"), pch=c("X","_"), bg="white")
 
-## library(coda)
-## plot(as.mcmc(tail(samples, 10000)))
-
+plot(as.mcmc(samples))
 ```
 
 As we can see, the default MCMC scheme makes few, if any, jumps between the four potential modes. 
@@ -114,7 +125,7 @@ As we can see, the default MCMC scheme makes few, if any, jumps between the four
 So let's try with adaptive parallel tempering (APT).
 
 
-```{r fitting2}
+```{r fitting2, fig.width=7, fig.height=7}
 
 conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids")
 conf$removeSamplers()
@@ -122,19 +133,27 @@ conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperP
 conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 conf
 
-aptR <- buildAPT(conf, Temps=1:4, ULT= 1000, print=TRUE)
+aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
 
 aptC <- compileNimble(aptR)
 
-aptC$run(niter=11000)
+aptC$run(niter=15000)
 
-samples <- as.matrix(aptC$mvSamples)
+samples <- tail(as.matrix(aptC$mvSamples), 10000)
 summary(samples)
 
 plot(samples, xlab="", ylab="", typ="l", xlim=c(-1,1)*max(cModel$y), ylim=c(-1,1)*max(cModel$y))
 points(samples, col="red", pch=19, cex=0.1)
+legend("topleft", legend=c("jumps", "samples"), col=c("black","red"), pch=c("_","X"), bg="white")
+
+plot(as.mcmc(samples))
+
 
 ```
 
 We can see that jumps between nodes (black lines) are freqent and that each node has been sampled (red points).
+The precission with which the weight of each posterior mode is estimated can be increased by increaseing 
+1. the number of rungs in the temperature ladder, and moreover 
+2. the number of iterations (niter). 
+
 

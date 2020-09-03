@@ -42,7 +42,7 @@ sampler_APT <- nimbleFunctionVirtual(
 
 
 ######################################################################################
-## buildAPT was adapted from Nimble's buildMCMC to provide adaptive parallel tempering
+## buildAPT was adapted from nimble's buildMCMC to provide adaptive parallel tempering
 ######################################################################################
 
 ##' Create an APT function, from an MCMCconf object
@@ -119,8 +119,8 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' MCMC function corresponding to the default MCMC configuration for this
 ##' model is returned.
 ##' @param Temps A numeric vector giving the initial temperature ladder. 
-##' @param monitorTmax A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitorring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exaclty the same nodes) for T=Tmax.
-##' @param ULT A numberic value (default = 1E6) that provides an upper limit to temperature during APT. 
+##' @param monitorTmax A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitoring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exactly the same nodes) for T=Tmax.
+##' @param ULT A numeric value (default = 1E6) that provides an upper limit to temperature during APT. 
 ##' @param thinPrintTemps A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10. 
 ##' 
 ##' @param ... Additional arguments to be passed to \code{configureMCMC} if
@@ -992,7 +992,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 
 #' APT Sampling Algorithms
 #'
-#' Details of the adaptive parallel tempering (APT) samplers adapted from Nimble's MCMC samplers.
+#' Details of the adaptive parallel tempering (APT) samplers adapted from nimble's MCMC samplers.
 #'
 #' @param model (uncompiled) model on which the APT algorithm is to be run
 #' @param mvSaved \code{modelValues} object to be used to store MCMC samples

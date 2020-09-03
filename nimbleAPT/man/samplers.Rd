@@ -47,7 +47,7 @@ Set up functions for this class should include the following arguments
 
 APT samplers must include "contains = sampler_APT" and include a setTemp method
 
-Details of the adaptive parallel tempering (APT) samplers adapted from Nimble's MCMC samplers.
+Details of the adaptive parallel tempering (APT) samplers adapted from nimble's MCMC samplers.
 }
 \section{\code{sampler_APT}}{
  base class for APT samplers

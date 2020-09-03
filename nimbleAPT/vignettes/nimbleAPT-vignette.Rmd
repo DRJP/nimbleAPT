@@ -28,7 +28,7 @@ In practice, a "temperature ladder" (a ranked set of temperatures) is establishe
 MCMC is performed within each rung of the temperature ladder, 
 and a special between-rung MCMC step is introduced so that parameter sets can move up and down the temperature ladder.
 Bayesian inference is made on the posterior samples of the unheated rung only.
-Adaptive parallel tempering algorithms automaticly tune the tempertures of the temperature ladder 
+Adaptive parallel tempering algorithms automaticly tune the temperatures of the temperature ladder 
 so that target acceptance rates for proposed between-rung jumps are achieved. 
 
 The nimbleAPT package provides the following...
@@ -51,8 +51,8 @@ The following toy problem illustrates how classic MCMC algorithms can struggle t
 First, we create a nimble model with a multimodal posterior. For this model there is no information in the data to remove uncertainty about the sign of the elements of centroids.
 
 ```{r model, fig.width=7, fig.height=7}
+library(utils)     # Loading this sets option("browser") 
 library(nimbleAPT) # Also loads nimble
-library(coda)      # Loads coda
 help.start()
 
 bugsCode <- nimbleCode({
@@ -117,6 +117,7 @@ points(x=cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
 points(x=-cModel$centroids[1], y=-cModel$centroids[1], col="red", pch=4, cex=3)
 legend("topleft", legend=c("posterior modes","jumps"), col=c("red","black"), pch=c("X","_"), bg="white")
 
+library(coda)      # Loads coda
 plot(as.mcmc(samples))
 ```
 
@@ -151,8 +152,8 @@ plot(as.mcmc(samples))
 
 ```
 
-We can see that jumps between nodes (black lines) are freqent and that each node has been sampled (red points).
-The precission with which the weight of each posterior mode is estimated can be increased by increaseing 
+We can see that jumps between nodes (black lines) are frequent and that each node has been sampled (red points).
+The precision with which the weight of each posterior mode is estimated can be increased by increasing 
 1. the number of rungs in the temperature ladder, and moreover 
 2. the number of iterations (niter). 
 

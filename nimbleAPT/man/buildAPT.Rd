@@ -16,9 +16,9 @@ model is returned.}
 
 \item{Temps}{A numeric vector giving the initial temperature ladder.}
 
-\item{monitorTmax}{A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitorring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exaclty the same nodes) for T=Tmax.}
+\item{monitorTmax}{A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitoring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exactly the same nodes) for T=Tmax.}
 
-\item{ULT}{A numberic value (default = 1E6) that provides an upper limit to temperature during APT.}
+\item{ULT}{A numeric value (default = 1E6) that provides an upper limit to temperature during APT.}
 
 \item{thinPrintTemps}{A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10.}
 

@@ -15,5 +15,6 @@ Depends:
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+	coda
 VignetteBuilder: knitr

@@ -7,5 +7,6 @@
 *.jpeg
 *.ps
 *.tar.gz
+*.zip
 nimble-snippets.Rcheck
 nimbleAPT.Rcheck

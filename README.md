@@ -8,7 +8,7 @@ The package was previously released under the name *nimble-snippets*.
 Installation
 ------------
 The package can be installed from github using the R package 'remotes' as follows.
-remotes::install_git(url="https://github.com/DRJP/nimble-snippets.git", subdir="nimbleAPT")
+remotes::install_git(url="https://github.com/DRJP/nimble-snippets.git", subdir="nimbleAPT", build_vignettes = TRUE)
 
 Citation
 --------

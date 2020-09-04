@@ -51,9 +51,7 @@ The following toy problem illustrates how classic MCMC algorithms can struggle t
 First, we create a nimble model with a multimodal posterior. For this model there is no information in the data to remove uncertainty about the sign of the elements of centroids.
 
 ```{r model, fig.width=7, fig.height=7}
-library(utils)     # Loading this sets option("browser") 
 library(nimbleAPT) # Also loads nimble
-help.start()
 
 bugsCode <- nimbleCode({
     for (ii in 1:nObs) {

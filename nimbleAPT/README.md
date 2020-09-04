@@ -8,6 +8,3 @@ Note: previously available on github under the name nimble-snippets.
 [![DOI](https://zenodo.org/badge/106051349.svg)](https://zenodo.org/badge/latestdoi/106051349)
 
 
-  <!-- badges: start -->
-  [![Travis build status](https://travis-ci.org/DRJP/nimble-snippets.svg?branch=master)](https://travis-ci.org/DRJP/nimble-snippets)
-  <!-- badges: end -->

@@ -11,23 +11,20 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 #' Modified from nimble's samplers_BASE to include a setTemp method
 #'
 #' Set up functions for this class should include the following arguments
+#'
 #' @param model name of model to be sampled
-#'
-#' @param mvSaved model values object to use when sampling 
-#'
+#' @param mvSaved model values object to use when sampling
 #' @param target nodes to be targeted by sampler
-#'
 #' @param control other control parameters
-#'
 #'
 #' @details APT samplers must include "contains = sampler_APT" and include a setTemp method
 #'
 #' @author David Pleydell
-#' 
+#'
 #' @rdname samplers
 #' @import nimble
 #' @import methods
-#' @export 
+#' @export
 sampler_APT <- nimbleFunctionVirtual(
     ## run = function(temperture=double(0, default=1)) {},
     name = 'sampler_APT',
@@ -46,19 +43,19 @@ sampler_APT <- nimbleFunctionVirtual(
 ######################################################################################
 
 ##' Create an APT function, from an MCMCconf object
-##' 
+##'
 ##' Adapted from buildMCMC. Accepts a single required argument, which
 ##' may be of class MCMCconf, or inherit from class modelBaseClass (a
 ##' NIMBLE model object).  Returns an APT function; see details
 ##' section.
-##' 
+##'
 ##' Calling buildAPT(conf,Temps,monitorTmax,ULT,thinPrintTemps) will
 ##' produce an uncompiled (R) APT function object, say 'myAPT'.
-##' 
+##'
 ##' The uncompiled MCMC function will have arguments:
-##' 
+##'
 ##' \code{niter} The number of iterations to run the MCMC.
-##' 
+##'
 ##' \code{reset} Boolean specifying whether to reset the internal MCMC
 ##' sampling algorithms to their initial state (in terms of self-adapting
 ##' tuning parameters), and begin recording posterior sample chains anew.
@@ -66,14 +63,14 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' from where it left off, appending additional posterior samples to the
 ##' already existing sample chains. Generally, \code{reset=FALSE} should only
 ##' be used when the MCMC has already been run (default = TRUE).
-##' 
+##'
 ##' \code{resetTempering} Boolean specifying whether to reset the
 ##' flexibility of the temperature ladder's adaptation process.
-##' 
+##'
 ##' \code{simulateAll} Boolean specifying whether to simulate into all
 ##' stochastic nodes.  This will overwrite the current values in all stochastic
 ##' nodes (default = FALSE).
-##' 
+##'
 ##' \code{time} Boolean specifying whether to record runtimes of the
 ##' individual internal MCMC samplers.  When \code{time=TRUE}, a vector of
 ##' runtimes (measured in seconds) can be extracted from the MCMC using the
@@ -89,54 +86,54 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' \code{tuneTemper1} Numeric tuning parameter of the adaptation
 ##' process of the temperature ladder. See source code for
 ##' buildAPT. Defaults to 10.
-##' 
+##'
 ##' \code{tuneTemper2} Numeric tuning parameter of the adaptation
 ##' process of the temperature ladder. See source code for
 ##' buildAPT. Defaults to 1.
-##' 
+##'
 ##' \code{progressBar} Boolean specifying whether to display a progress bar
 ##' during MCMC execution (default = TRUE).  The progress bar can be
 ##' permanently disabled by setting the system option
 ##' \code{nimbleOptions(MCMCprogressBar = FALSE)}.
-##' 
+##'
 ##' Samples corresponding to the \code{monitors} and \code{monitors2} from the
 ##' MCMCconf are stored into the interval variables \code{mvSamples} and
 ##' \code{mvSamples2}, respectively. These may be accessed and converted into R
 ##' matrix objects via: \code{as.matrix(mcmc$mvSamples)}
 ##' \code{as.matrix(mcmc$mvSamples2)}
-##' 
+##'
 ##' The uncompiled (R) MCMC function may be compiled to a compiled MCMC object,
 ##' taking care to compile in the same project as the R model object, using:
 ##' \code{Cmcmc <- compileNimble(Rmcmc, project=Rmodel)}
-##' 
+##'
 ##' The compiled function will function identically to the uncompiled object,
 ##' except acting on the compiled model object.
-##' 
+##'
 ##' @param conf An object of class MCMCconf that specifies the model, samplers,
 ##' monitors, and thinning intervals for the resulting MCMC function.  See
 ##' \code{configureMCMC} for details of creating MCMCconf objects.
 ##' Alternatively, \code{MCMCconf} may a NIMBLE model object, in which case an
 ##' MCMC function corresponding to the default MCMC configuration for this
 ##' model is returned.
-##' @param Temps A numeric vector giving the initial temperature ladder. 
+##' @param Temps A numeric vector giving the initial temperature ladder.
 ##' @param monitorTmax A logical indicator (default = TRUE) controlling if MCMC output should be stored at the hottest rung of the temperature ladder. Useful when monitoring the behaviour of APT. When TRUE mvSamples and mvSamples2 monitor T=1 and mvSamplesTmax and mvSamples2Tmax provide identically defined monitors (i.e. for exactly the same nodes) for T=Tmax.
-##' @param ULT A numeric value (default = 1E6) that provides an upper limit to temperature during APT. 
-##' @param thinPrintTemps A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10. 
-##' 
+##' @param ULT A numeric value (default = 1E6) that provides an upper limit to temperature during APT.
+##' @param thinPrintTemps A numeric value controlling how often temperatures of the temperature ladder should be printed to screen when runtime parameter printTemps is TRUE. The default value of 1 is often too verbose. A good value to use is niter/10.
+##'
 ##' @param ... Additional arguments to be passed to \code{configureMCMC} if
 ##' \code{conf} is a NIMBLE model object
 ## ##' @section Calculating WAIC:
-## ##' 
+## ##'
 ## ##' After the MCMC has been run, calling the \code{calculateWAIC()} method of
 ## ##' the MCMC object will return the WAIC for the model, calculated using the
 ## ##' posterior samples from the MCMC run.
-## ##' 
+## ##'
 ## ##' \code{calculateWAIC()} has a single arugment:
-## ##' 
+## ##'
 ## ##' \code{nburnin} The number of iterations to subtract from the beginning of
 ## ##' the posterior samples of the MCMC object for WAIC calculation.  Defaults to
 ## ##' 0.
-## ##' 
+## ##'
 ## ##' The \code{calculateWAIC} method calculates the WAIC of the model that the
 ## ##' MCMC was performed on. The WAIC (Watanabe, 2010) is calculated from
 ## ##' Equations 5, 12, and 13 in Gelman (2014).  Note that the set of all
@@ -171,9 +168,9 @@ sampler_APT <- nimbleFunctionVirtual(
 ## ##' }                                                                                                          ##
 ####################################################################################################################
 #' @import nimble
-#' @export 
+#' @export
 buildAPT <- nimbleFunction(
-    setup = function(conf,                ## As for buildMCMC 
+    setup = function(conf,                ## As for buildMCMC
                      Temps,               ## Vector of temperatures. Typically, lowest temperature should be 1.
                      monitorTmax=TRUE,    ## Logical, save MCMC output for Tmax too.
                      ULT=1E6,             ## Scalar, Upper Limit on Temperatures
@@ -199,7 +196,7 @@ buildAPT <- nimbleFunction(
         invTemps     <- 1/Temps[1:nTemps]
         TempsCurrent <- Temps[1:nTemps]
         TempsOri     <- Temps[1:nTemps]
-        nTemps_1     <- nTemps - 1        
+        nTemps_1     <- nTemps - 1
         mvTemps      <- modelValues(model, nTemps) ## Stores state of MCMC at each temperature
         tempTraj     <- nimMatrix(0, nrow=1000, ncol=nTemps) ## Stores trajectories of temperatures
         logProbTemps <- numeric(nTemps)
@@ -207,9 +204,9 @@ buildAPT <- nimbleFunction(
         temporary    <- numeric(nTemps)
         accCountSwap <- nimMatrix(0, nTemps, nTemps)
         nimPrint("Initial temperatures:", Temps,"\n")
-        ## 
+        ##
         for (tt in 1:nTemps) {
-            for(ss in 1:nSamplersPerT) { 
+            for(ss in 1:nSamplersPerT) {
                 ist <- ss + (tt-1) * nSamplersPerT ## index for Sampler & Temperature
                 samplerFunctions[[ist]] <- conf$samplerConfs[[ss]]$buildSampler(model=model, mvSaved=mvSaved)
                 samplerFunctions[[ist]]$setTemp(temp=Temps[tt])
@@ -232,13 +229,13 @@ buildAPT <- nimbleFunction(
         thin              <- conf$thin
         thin2             <- conf$thin2
         mvSamplesConf     <- conf$getMvSamplesConf(1)
-        mvSamples2Conf    <- conf$getMvSamplesConf(2)        
+        mvSamples2Conf    <- conf$getMvSamplesConf(2)
         monitors          <- processMonitorNames(model, conf$monitors)
         monitors2         <- processMonitorNames(model, conf$monitors2)
         mvSamples         <- modelValues(mvSamplesConf)   ## For storing MCMC output (T=1)
         mvSamples2        <- modelValues(mvSamples2Conf)  ## For storing MCMC output (T=Tmax)
         if (monitorTmax==TRUE) {
-            mvSamplesTmax  <- modelValues(mvSamplesConf)  ## For MCMC output (T=Tmax) 
+            mvSamplesTmax  <- modelValues(mvSamplesConf)  ## For MCMC output (T=Tmax)
             mvSamples2Tmax <- modelValues(mvSamples2Conf) ## For MCMC output (T=Tmax) too
         }
         samplerTimes      <- c(0,0) ## Establish as a vector
@@ -254,8 +251,8 @@ buildAPT <- nimbleFunction(
                    time           = logical(default=FALSE),
                    adaptTemps     = logical(default=TRUE),
                    printTemps     = double(default=FALSE),
-                   tuneTemper1    = double(default=10), 
-                   tuneTemper2    = double(default=1), 
+                   tuneTemper1    = double(default=10),
+                   tuneTemper2    = double(default=1),
                    progressBar    = logical(default=TRUE)) {
         if(simulateAll) {
             simulate(model)     ## Default behavior excludes data nodes
@@ -268,12 +265,12 @@ buildAPT <- nimbleFunction(
         }
         my_initializeModel$run()
         if(resetTempering) {
-            nimPrint("Resetting adaptation rate for tempering") 
+            nimPrint("Resetting adaptation rate for tempering")
             totalIters <<- 1
         }
-        accCountSwap[,] <<- 0 * accCountSwap[,] 
+        accCountSwap[,] <<- 0 * accCountSwap[,]
         if(reset) {
-            nimPrint("Resetting MCMC samplers and initial values set from mvTemps row 1") 
+            nimPrint("Resetting MCMC samplers and initial values set from mvTemps row 1")
             for (tt in 1:nTemps) {
                 nimCopy(from = model, to = mvTemps, row = tt, logProb = TRUE)
             }
@@ -283,7 +280,7 @@ buildAPT <- nimbleFunction(
             mvSamples_offset  <- 0
             mvSamples2_offset <- 0
             setSize(tempTraj,  niter/thin, nTemps)
-            resize(mvSamples,  niter/thin) 
+            resize(mvSamples,  niter/thin)
             resize(mvSamples2, niter/thin2)
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  niter/thin)
@@ -298,11 +295,11 @@ buildAPT <- nimbleFunction(
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  mvSamples_offset  + niter/thin)
                 resize(mvSamples2Tmax, mvSamples2_offset + niter/thin2)
-            } 
+            }
         }
         ##### Monitors & Progress Bar #####
-        if(dim(samplerTimes)[1] != length(samplerFunctions))            
-            setSize(samplerTimes, length(samplerFunctions)) 
+        if(dim(samplerTimes)[1] != length(samplerFunctions))
+            setSize(samplerTimes, length(samplerFunctions))
         if(niter < progressBarLength+3)
             progressBar <- progressBar & 0 ## avoids compiler warning
         if(progressBar) {
@@ -325,8 +322,8 @@ buildAPT <- nimbleFunction(
             if(time) { ## time == TRUE
                 for(tt in 1:nTemps) {
                     ## Copy state of MCMC at temperature tt to model & mvSaved and continue
-                    nimCopy(from=mvTemps, to=model,   row=tt,  logProb = TRUE) 
-                    nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE) 
+                    nimCopy(from=mvTemps, to=model,   row=tt,  logProb = TRUE)
+                    nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE)
                     for(ss in 1:nSamplersPerT) {
                         iST <- ss + (tt-1) * nSamplersPerT
                         samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
@@ -336,13 +333,13 @@ buildAPT <- nimbleFunction(
                     ## Copy state of MCMC at temperature tt back to mvTemps
                     nimCopy(from=model, to=mvTemps, rowTo=tt, logProb = TRUE)
                     logProbTemps[tt] <<- model$getLogProb()
-                } 
-            } else {   ## time == FALSE 
+                }
+            } else {   ## time == FALSE
                 for(tt in 1:nTemps) {
                     ## browser()
                     ## Copy state of MCMC at temperature tt to model & mvSaved and continue
-                    nimCopy(from=mvTemps, to=model,   row=tt,  logProb = TRUE) 
-                    nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE) 
+                    nimCopy(from=mvTemps, to=model,   row=tt,  logProb = TRUE)
+                    nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE)
                     for(ss in 1:nSamplersPerT) {
                         iST <- ss + (tt-1) * nSamplersPerT
                         samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
@@ -351,24 +348,24 @@ buildAPT <- nimbleFunction(
                     ## Copy state of MCMC at temperature tt back to mvTemps
                     nimCopy(from=model, to=mvTemps, rowTo=tt, logProb = TRUE)
                     logProbTemps[tt] <<- model$getLogProb()
-                }   
-            }       
+                }
+            }
             ## ################################################
             ## Random Swap Phase: Jumps between temperatures ##
-            pSwapCalc() ## Updates pSwapMatrix            
-            for (ii in 1:nTemps) { 
+            pSwapCalc() ## Updates pSwapMatrix
+            for (ii in 1:nTemps) {
                 if (iter %% 2 == 0) {
                     iFrom <- ii
                 } else {
                     iFrom <- nTemps + 1 - ii
                 }
-                iTo <- rcat(n=1, prob=pSwapMatrix[iFrom, 1:nTemps]) 
+                iTo <- rcat(n=1, prob=pSwapMatrix[iFrom, 1:nTemps])
                 pProp <- pSwapMatrix[iFrom,iTo]
                 pRev  <- pSwapMatrix[iTo,iFrom]
-                lMHR  <- (invTemps[iTo]-invTemps[iFrom]) * 
+                lMHR  <- (invTemps[iTo]-invTemps[iFrom]) *
                     (logProbTemps[iFrom]-logProbTemps[iTo]) + log(pRev) - log(pProp)
                 lu    <- log(runif(1))
-                if (lu < lMHR) { 
+                if (lu < lMHR) {
                     ## Swap model values
                     nimCopy(from=mvTemps, to=mvSaved, row=iTo,   rowTo=1,     logProb = TRUE)
                     nimCopy(from=mvTemps, to=mvTemps, row=iFrom, rowTo=iTo,   logProb = TRUE)
@@ -379,15 +376,15 @@ buildAPT <- nimbleFunction(
                     logProbTemps[iFrom] <<- temporary[1]
                     ## Swap rows of pSwapMat
                     temporary[1:nTemps]         <<- pSwapMatrix[iTo,1:nTemps]
-                    pSwapMatrix[iTo,1:nTemps]   <<- pSwapMatrix[iFrom,1:nTemps]                    
+                    pSwapMatrix[iTo,1:nTemps]   <<- pSwapMatrix[iFrom,1:nTemps]
                     pSwapMatrix[iFrom,1:nTemps] <<- temporary[1:nTemps]
                     ## Swap cols of pSwapMat
                     temporary[1:nTemps]         <<- pSwapMatrix[1:nTemps,iTo]
                     pSwapMatrix[1:nTemps,iTo]   <<- pSwapMatrix[1:nTemps,iFrom]
                     pSwapMatrix[1:nTemps,iFrom] <<- temporary[1:nTemps]
                     ## Acceptance counter
-                    accCountSwap[iFrom, iTo]    <<- accCountSwap[iFrom, iTo] + 1 
-                } 
+                    accCountSwap[iFrom, iTo]    <<- accCountSwap[iFrom, iTo] + 1
+                }
             }
             ## nimPrint(pSwapMatrix)
             ## nimPrint(Temps, "     ", invTemps)
@@ -395,26 +392,25 @@ buildAPT <- nimbleFunction(
             ## Temperature adaptation scheme ##
             totalIters <<- totalIters + 1
             if (adaptTemps) {
-                ## gammaTSA <- 1 / ((totalIters/thin + 3) ^ 0.8) 
-                gammaTSA    <- 1 / ((totalIters/tuneTemper1 + 3) ^ tuneTemper2)  
+                ## gammaTSA <- 1 / ((totalIters/thin + 3) ^ 0.8)
+                gammaTSA    <- 1 / ((totalIters/tuneTemper1 + 3) ^ tuneTemper2)
                 TempsCurrent[1:nTemps] <<- Temps
                 for (ii in 1:nTemps_1) {
                     accProb          <- min(1, exp( (invTemps[ii+1]-invTemps[ii]) * (logProbTemps[ii]-logProbTemps[ii+1]) ))
                     Temps[ii+1]     <<- Temps[ii] + (TempsCurrent[ii+1] - TempsCurrent[ii]) * exp(gammaTSA*(accProb-0.234))
                     if (Temps[ii+1] > ULT)
-                        Temps[ii+1] <<- ULT + ii ## This prevents the temperature ladder from exploding 
-                } 
-                for (ii in 1:nTemps_1) 
+                        Temps[ii+1] <<- ULT + ii ## This prevents the temperature ladder from exploding
+                }
+                for (ii in 1:nTemps_1)
                     invTemps[ii+1]  <<- 1 / Temps[ii+1]
                 ## nimPrint("iter: ", iter)
                 ## nimPrint("logProbTemps: ", logProbTemps)
                 ## nimPrint(accCountSwap)
-            }            
+            }
             ##############################################
             ## Automatically drop unneeded temperatures ##
-            ## Not implimented                          ## 
-            ##
-            #################
+            ## Not implimented                          ##
+            ##############################################
             ## MCMC Output ##
             if(iter %% thin  == 0) {
                 nimCopy(from = mvTemps, to = mvSamples,
@@ -422,23 +418,23 @@ buildAPT <- nimbleFunction(
                 tempTraj[iter/thin, 1:nTemps] <<- Temps[1:nTemps]
                 if(printTemps == 1.0) {
                     if(totalIters %% thinPrintTemps == 0) {
-                        nimPrint(iter, asRow(Temps))  
+                        nimPrint(iter, asRow(Temps))
                         if(!adaptTemps)
                             printTemps <- 0.0
                     }
                 }
             }
-            if(iter %% thin2 == 0) 
-                nimCopy(from = mvTemps, to = mvSamples2, 
-                        row = 1, rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2) 
+            if(iter %% thin2 == 0)
+                nimCopy(from = mvTemps, to = mvSamples2,
+                        row = 1, rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
             if (monitorTmax==TRUE) {
                 if(iter %% thin  == 0)
                     nimCopy(from = mvTemps, to = mvSamplesTmax, row = nTemps,
-                            rowTo = mvSamples_offset  + iter/thin,  nodes = monitors) 
+                            rowTo = mvSamples_offset  + iter/thin,  nodes = monitors)
                 if(iter %% thin2 == 0)
                     nimCopy(from = mvTemps, to = mvSamples2Tmax, row = nTemps,
                             rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
-            } 
+            }
             ## Progress Bar
             if(progressBar & (iter == progressBarNextFloor)) {
                 cat('-')
@@ -454,7 +450,7 @@ buildAPT <- nimbleFunction(
         getTimes = function() {
             returnType(double(1))
             return(samplerTimes)
-        }, 
+        },
         pSwapCalc = function() {
             ## Fill matrix
             for (ii in 2:nTemps) {
@@ -463,7 +459,7 @@ buildAPT <- nimbleFunction(
                     pSwapMatrix[jj,ii] <<- pSwapMatrix[ii,jj]
                 }
             }
-            ## Normalise rows            
+            ## Normalise rows
             for (ii in 1:nTemps) {
                 rowSum <- sum(pSwapMatrix[ii,1:nTemps])
                 if(rowSum>0) {
@@ -482,7 +478,7 @@ buildAPT <- nimbleFunction(
         }
     )    ## ,
     ## where = getLoadingNamespace()
-    ## where = getNamespace("nimbleAPT")    
+    ## where = getNamespace("nimbleAPT")
 )
 
 
@@ -494,7 +490,7 @@ buildAPT <- nimbleFunction(
 #' @export
 #' @import nimble
 sampler_RW_tempered <- nimbleFunction(
-    name = 'sampler_RW_tempered', 
+    name = 'sampler_RW_tempered',
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## Control list extraction
@@ -515,7 +511,7 @@ sampler_RW_tempered <- nimbleFunction(
             stop("control$temperPriors unspecified in sampler_RW_tempered")
         ## Node list generation
         targetAsScalar <- model$expandNodeNames(target, returnScalarComponents = TRUE)
-        calcNodes      <- model$getDependencies(target) 
+        calcNodes      <- model$getDependencies(target)
         targetNode     <- model$expandNodeNames(target)
         dependantNodes <- calcNodes[!is.element(calcNodes, targetNode)]
         ## Numeric value generation
@@ -533,8 +529,8 @@ sampler_RW_tempered <- nimbleFunction(
         if(scale < 0)                  stop('cannot use RW sampler with scale control parameter less than 0')
         ## Initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is just a hack. Only 1st element is used.
-    },  
-    run = function() { 
+    },
+    run = function() {
         ## nimPrint(temperature[1])
         ## browser()
         currentValue <- model[[target]]
@@ -545,24 +541,24 @@ sampler_RW_tempered <- nimbleFunction(
         } else {
             propValue <- rnorm(1, mean = currentValue,  sd = scale)
         }
-        if(reflective) { 
+        if(reflective) {
             lower <- model$getBound(target, 'lower')
             upper <- model$getBound(target, 'upper')
             while(propValue < lower | propValue > upper) {
                 if(propValue < lower) propValue <- 2*lower - propValue
                 if(propValue > upper) propValue <- 2*upper - propValue
             }
-        } 
+        }
         if (temperPriors) {
-            model[[target]] <<- propValue 
+            model[[target]] <<- propValue
             logMHR <- calculateDiff(model, calcNodes) / temperature[1] + propLogScale ## Original. Tempers everything.
         } else {
             logPriorWeightOri   <- getLogProb(model, target)
             model[[target]]    <<- propValue
             diffLogProb         <- calculateDiff(model, calcNodes)
             logPriorWeightProp  <- getLogProb(model, target)
-            diffLogPriorWeights <- logPriorWeightProp - logPriorWeightOri            
-            logMHR <- (diffLogProb - diffLogPriorWeights) / temperature[1] + diffLogPriorWeights + propLogScale ## POSSIBLY BUGGY ???            
+            diffLogPriorWeights <- logPriorWeightProp - logPriorWeightOri
+            logMHR <- (diffLogProb - diffLogPriorWeights) / temperature[1] + diffLogPriorWeights + propLogScale ## POSSIBLY BUGGY ???
         }
         jump <- decide(logMHR)
         if (jump) {
@@ -573,11 +569,11 @@ sampler_RW_tempered <- nimbleFunction(
         if(adaptive) {
             adaptiveProcedure(jump)
         }
-    },                
-    methods = list(   
+    },
+    methods = list(
         setTemp = function(temp=double()) {
             temperature[1] <<- temp
-        },            
+        },
         adaptiveProcedure = function(jump = logical()) {
             timesRan <<- timesRan + 1
             if(jump)     timesAccepted <<- timesAccepted + 1
@@ -615,7 +611,7 @@ sampler_RW_tempered <- nimbleFunction(
 #' @export
 #' @import nimble
 sampler_RW_block_tempered <- nimbleFunction(
-    name = 'sampler_RW_block_tempered', 
+    name = 'sampler_RW_block_tempered',
     contains = sampler_APT,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
@@ -674,7 +670,7 @@ sampler_RW_block_tempered <- nimbleFunction(
             lpMHR               <- my_setAndCalculateDiff$run(propValueVector)
             diffLogPriorWeights <- getLogProb(model, targetNodes) - logPriorWeightOri
             lpMHR               <- (lpMHR - diffLogPriorWeights) / temperature[1] + diffLogPriorWeights
-        }        
+        }
         jump <- my_decideAndJump$run(lpMHR, 0, 0, 0) ## will use lpMHR - 0
         ## nimPrint(temperature[1], " ", jump)
         if (adaptive) {
@@ -763,12 +759,12 @@ sampler_slice_tempered <- nimbleFunction(
         timesAdapted  <- 0
         sumJumps      <- 0
         discrete      <- model$isDiscrete(target)
-        ## checks     
+        ## checks
         if(length(targetAsScalar) > 1)     stop('cannot use slice sampler on more than one target node')
         ## initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only first element is used.
     },
-    run = function() { 
+    run = function() {
         ## nimPrint(temperature[1])
         u  <- getLogProb(model, calcNodes) / temperature[1] - rexp(1, 1)    # generate (log)-auxiliary variable: exp(u) ~ uniform(0, exp(lp))
         x0 <- model[[target]]    # create random interval (L,R), of width 'width', around current value of target
@@ -861,7 +857,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
         ## node list generation
         targetAsScalar <- model$expandNodeNames(target, returnScalarComponents = TRUE)
         targetAllNodes <- unique(model$expandNodeNames(target))
-        calcNodes      <- model$getDependencies(target) 
+        calcNodes      <- model$getDependencies(target)
         lTarget        <- length(targetAsScalar)
         Ntotal         <- sum(values(model,target))
         NOverL         <- Ntotal / lTarget
@@ -878,7 +874,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
         RescaleThreshold  <- 0.2 * Ones
         lpProp  <- 0
         lpRev   <- 0
-        Pi      <- pi 
+        Pi      <- pi
         PiOver2 <- Pi / 2 ## Irrational number prevents recycling becoming degenerate
         u       <- runif(1, 0, Pi)
         ## nested function and function list definitions
@@ -893,9 +889,9 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only first element is used.
     },
     run = function() {
-        for(iFROM in 1:lTarget) {            
+        for(iFROM in 1:lTarget) {
             for(iTO in 1:(lTarget-1)) {
-                if(u > PiOver2) {                
+                if(u > PiOver2) {
                     iFrom <- iFROM
                     iTo   <- iTO
                     if (iFrom == iTo)
@@ -923,20 +919,20 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
         setTemp = function(temp=double()) {
             temperature[1] <<- temp
         },
-        generateProposalVector = function(iFrom = integer(), iTo = integer()) { 
-            propVector <- values(model,target) 
-            pSwap      <- min(1, max(1, ENSwapMatrix[iFrom,iTo]) / propVector[iFrom]) 
-            nSwap      <- rbinom(n=1,   size=propVector[iFrom], prob=pSwap) 
-            lpProp    <<- dbinom(nSwap, size=propVector[iFrom], prob=pSwap, log=TRUE) 
-            propVector[iFrom] <- propVector[iFrom] - nSwap 
-            propVector[iTo]   <- propVector[iTo]   + nSwap 
-            pRevSwap   <- min(1, max(1, ENSwapMatrix[iTo,iFrom]) / (propVector[iTo] + nSwap)) 
-            lpRev     <<- dbinom(nSwap, size=propVector[iTo], prob=pRevSwap, log=TRUE) 
-            returnType(double(1)) 
-            return(propVector) 
+        generateProposalVector = function(iFrom = integer(), iTo = integer()) {
+            propVector <- values(model,target)
+            pSwap      <- min(1, max(1, ENSwapMatrix[iFrom,iTo]) / propVector[iFrom])
+            nSwap      <- rbinom(n=1,   size=propVector[iFrom], prob=pSwap)
+            lpProp    <<- dbinom(nSwap, size=propVector[iFrom], prob=pSwap, log=TRUE)
+            propVector[iFrom] <- propVector[iFrom] - nSwap
+            propVector[iTo]   <- propVector[iTo]   + nSwap
+            pRevSwap   <- min(1, max(1, ENSwapMatrix[iTo,iFrom]) / (propVector[iTo] + nSwap))
+            lpRev     <<- dbinom(nSwap, size=propVector[iTo], prob=pRevSwap, log=TRUE)
+            returnType(double(1))
+            return(propVector)
         },
         adaptiveProcedure = function(jump=logical(), iFrom=integer(), iTo=integer()) {
-            NVector <- values(model,target) 
+            NVector <- values(model,target)
             timesRan[iFrom, iTo] <<- timesRan[iFrom, iTo] + 1
             if(jump)
                 timesAccepted[iFrom, iTo] <<- timesAccepted[iFrom, iTo] + 1
@@ -952,19 +948,19 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
                     ENSwapMatrix[iFrom, iTo] <<-
                         max(1,
                             ENSwapMatrix[iFrom,iTo] - ENSwapDeltaMatrix[iFrom,iTo] / totalAdapted[iFrom,iTo])
-                } 
+                }
                 if(accRate<RescaleThreshold[iFrom,iTo] | accRate>(1-RescaleThreshold[iFrom,iTo])) {
-                    ## rescale iff ENSwapMatrix[iFrom, iTo] is not set to an upper or lower bound 
+                    ## rescale iff ENSwapMatrix[iFrom, iTo] is not set to an upper or lower bound
                     if (ENSwapMatrix[iFrom, iTo] > 1 & ENSwapMatrix[iFrom, iTo] < Ntotal) {
-                        ScaleShifts[iFrom, iTo]       <<- ScaleShifts[iFrom, iTo] + 1 
+                        ScaleShifts[iFrom, iTo]       <<- ScaleShifts[iFrom, iTo] + 1
                         ENSwapDeltaMatrix[iFrom, iTo] <<- min(NOverL, ENSwapDeltaMatrix[iFrom, iTo] * totalAdapted[iFrom,iTo] / 10)
-                        ENSwapDeltaMatrix[iTo, iFrom] <<- ENSwapDeltaMatrix[iFrom, iTo] 
+                        ENSwapDeltaMatrix[iTo, iFrom] <<- ENSwapDeltaMatrix[iFrom, iTo]
                         RescaleThreshold[iFrom,iTo]   <<- 0.2 * 0.95^ScaleShifts[iFrom, iTo]
                     }
                 }
-                ## lower Bound 
+                ## lower Bound
                 if(ENSwapMatrix[iFrom, iTo] < 1)
-                    ENSwapMatrix[iFrom, iTo] <<- 1                
+                    ENSwapMatrix[iFrom, iTo] <<- 1
                 ## symmetry in ENSwapMatrix helps maintain good acceptance rates
                 ENSwapMatrix[iTo,iFrom]   <<- ENSwapMatrix[iFrom,iTo]
                 timesRan[iFrom, iTo]      <<- 0
@@ -1014,7 +1010,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \item adaptive. A logical argument, specifying whether the sampler should adapt the scale (proposal standard deviation) throughout the course of MCMC execution to achieve a theoretically desirable acceptance rate. (default = TRUE)
 #' \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW sampler will perform its adaptation procedure.  This updates the scale variable, based upon the sampler's achieved acceptance rate over the past adaptInterval iterations. (default = 200)
 #' \item scale. The initial value of the normal proposal standard deviation.  If adaptive = FALSE, scale will never change. (default = 1)
-#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
+#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales.
 #' }
 #'
 #' The RW sampler cannot be used with options log=TRUE and reflective=TRUE, i.e. it cannot do reflective sampling on a log scale.
@@ -1030,7 +1026,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW_block sampler will perform its adaptation procedure, based on the past adaptInterval iterations. (default = 200)
 #' \item scale. The initial value of the scalar multiplier for propCov.  If adaptive = FALSE, scale will never change. (default = 1)
 #' \item propCov. The initial covariance matrix for the multivariate normal proposal distribution.  This element may be equal to the character string 'identity', in which case the identity matrix of the appropriate dimension will be used for the initial proposal covariance matrix. (default = 'identity')
-#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales. 
+#' \item temperPriors. Logical indicator determining if tempering should apply to prior likelihoods. Usually can be set to TRUE. But setting to FALSE can help avoid degeneracy issues for complex problems where bounded uniform priors have been transformed to other (e.g. logit) scales.
 #' }
 #'
 #' @section slice sampler:
@@ -1053,9 +1049,9 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \itemize{
 #' \item adaptive.  A logical argument, specifying whether the sampler should adapt the binomial proposal probabilities throughout the course of MCMC execution. (default = TRUE)
 #' \item adaptInterval.  The interval on which to perform adaptation.  A minimum value of 100 is required. (default = 200)
-#' \item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler. 
+#' \item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler.
 #' }
-#' 
+#'
 #' @name samplers
 #'
 #' @aliases sampler sampler_RW_tempered sampler_RW_block_tempered sampler_RW_multinomial_tempered sampler_slice_tempered
@@ -1086,7 +1082,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 ##'
 ##' Returns two plots, one with T~iterations, the other log10(T)~iterations.
 ##' @title plot.tempTraj
-##' @param cAPT - an APT object generated by buildAPT and compiled by compileNimble.
+##' @param cAPT An APT object generated by buildAPT and compiled by compileNimble.
 ##' @return A plot of the trajectories.
 ##' @author David Pleydell
 ##' @seealso An example is provided in the documentation of buildAPT.
@@ -1109,5 +1105,3 @@ plotTempTraj <- function(cAPT) {
     for (ii in 1:nCol)
         lines(log10(cAPT$tempTraj[,ii]), col=myCols[ii])
 }
-
-

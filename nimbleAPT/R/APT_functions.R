@@ -172,7 +172,7 @@ sampler_APT <- nimbleFunctionVirtual(
 buildAPT <- nimbleFunction(
     setup = function(conf,                ## As for buildMCMC
                      Temps,               ## Vector of temperatures. Typically, lowest temperature should be 1.
-                     monitorTmax=TRUE,    ## Logical, save MCMC output for Tmax too.
+                     monitorTmax=TRUE,    ## Logical. Save MCMC output for Tmax too.
                      ULT=1E6,             ## Scalar, Upper Limit on Temperatures
                      thinPrintTemps=1,    ## Nb. iterations between prints of temps when adaptTemps==TRUE
                      ...) {
@@ -234,6 +234,11 @@ buildAPT <- nimbleFunction(
         monitors2         <- processMonitorNames(model, conf$monitors2)
         mvSamples         <- modelValues(mvSamplesConf)   ## For storing MCMC output (T=1)
         mvSamples2        <- modelValues(mvSamples2Conf)  ## For storing MCMC output (T=Tmax)
+        ##
+        loglikConf <- modelValuesConf(vars = c('logProbs'), types = c('double'), sizes = list(logProbs = 1))
+        loglik     <- modelValues(loglikConf, m=1)
+        loglik['logProbs',]
+        ##
         if (monitorTmax==TRUE) {
             mvSamplesTmax  <- modelValues(mvSamplesConf)  ## For MCMC output (T=Tmax)
             mvSamples2Tmax <- modelValues(mvSamples2Conf) ## For MCMC output (T=Tmax) too
@@ -282,6 +287,7 @@ buildAPT <- nimbleFunction(
             setSize(tempTraj,  niter/thin, nTemps)
             resize(mvSamples,  niter/thin)
             resize(mvSamples2, niter/thin2)
+            resize(loglik,     niter/thin)
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  niter/thin)
                 resize(mvSamples2Tmax, niter/thin2)
@@ -292,6 +298,7 @@ buildAPT <- nimbleFunction(
             setSize(tempTraj,  niter/thin, nTemps)
             resize(mvSamples,  mvSamples_offset  + niter/thin)
             resize(mvSamples2, mvSamples2_offset + niter/thin2)
+            resize(loglik,     mvSamples_offset  + niter/thin)
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  mvSamples_offset  + niter/thin)
                 resize(mvSamples2Tmax, mvSamples2_offset + niter/thin2)
@@ -362,8 +369,7 @@ buildAPT <- nimbleFunction(
                 iTo <- rcat(n=1, prob=pSwapMatrix[iFrom, 1:nTemps])
                 pProp <- pSwapMatrix[iFrom,iTo]
                 pRev  <- pSwapMatrix[iTo,iFrom]
-                lMHR  <- (invTemps[iTo]-invTemps[iFrom]) *
-                    (logProbTemps[iFrom]-logProbTemps[iTo]) + log(pRev) - log(pProp)
+                lMHR  <- (invTemps[iTo]-invTemps[iFrom]) * (logProbTemps[iFrom]-logProbTemps[iTo]) + log(pRev) - log(pProp)
                 lu    <- log(runif(1))
                 if (lu < lMHR) {
                     ## Swap model values
@@ -413,9 +419,9 @@ buildAPT <- nimbleFunction(
             ##############################################
             ## MCMC Output ##
             if(iter %% thin  == 0) {
-                nimCopy(from = mvTemps, to = mvSamples,
-                        row = 1, rowTo = mvSamples_offset + iter/thin,  nodes = monitors)
+                nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thin,  nodes = monitors)
                 tempTraj[iter/thin, 1:nTemps] <<- Temps[1:nTemps]
+                loglik["logProbs", mvSamples_offset + iter/thin] = logProbTemps[1]
                 if(printTemps == 1.0) {
                     if(totalIters %% thinPrintTemps == 0) {
                         nimPrint(iter, asRow(Temps))
@@ -425,8 +431,7 @@ buildAPT <- nimbleFunction(
                 }
             }
             if(iter %% thin2 == 0)
-                nimCopy(from = mvTemps, to = mvSamples2,
-                        row = 1, rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
+                nimCopy(from = mvTemps, to = mvSamples2, row = 1, rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
             if (monitorTmax==TRUE) {
                 if(iter %% thin  == 0)
                     nimCopy(from = mvTemps, to = mvSamplesTmax, row = nTemps,

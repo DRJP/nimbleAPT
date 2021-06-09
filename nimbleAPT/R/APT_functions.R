@@ -236,8 +236,8 @@ buildAPT <- nimbleFunction(
         mvSamples2        <- modelValues(mvSamples2Conf)  ## For storing MCMC output (T=Tmax)
         ##
         loglikConf <- modelValuesConf(vars = c('logProbs'), types = c('double'), sizes = list(logProbs = 1))
-        loglik     <- modelValues(loglikConf, m=1)
-        loglik['logProbs',]
+        mvLogProbs <- modelValues(loglikConf)
+        mvLogProbs['logProbs',]
         ##
         if (monitorTmax==TRUE) {
             mvSamplesTmax  <- modelValues(mvSamplesConf)  ## For MCMC output (T=Tmax)
@@ -287,7 +287,7 @@ buildAPT <- nimbleFunction(
             setSize(tempTraj,  niter/thin, nTemps)
             resize(mvSamples,  niter/thin)
             resize(mvSamples2, niter/thin2)
-            resize(loglik,     niter/thin)
+            resize(mvLogProbs,     niter/thin)
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  niter/thin)
                 resize(mvSamples2Tmax, niter/thin2)
@@ -298,7 +298,7 @@ buildAPT <- nimbleFunction(
             setSize(tempTraj,  niter/thin, nTemps)
             resize(mvSamples,  mvSamples_offset  + niter/thin)
             resize(mvSamples2, mvSamples2_offset + niter/thin2)
-            resize(loglik,     mvSamples_offset  + niter/thin)
+            resize(mvLogProbs,     mvSamples_offset  + niter/thin)
             if (monitorTmax==TRUE) {
                 resize(mvSamplesTmax,  mvSamples_offset  + niter/thin)
                 resize(mvSamples2Tmax, mvSamples2_offset + niter/thin2)
@@ -421,7 +421,7 @@ buildAPT <- nimbleFunction(
             if(iter %% thin  == 0) {
                 nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thin,  nodes = monitors)
                 tempTraj[iter/thin, 1:nTemps] <<- Temps[1:nTemps]
-                loglik["logProbs", mvSamples_offset + iter/thin] = logProbTemps[1]
+                mvLogProbs["logProbs", mvSamples_offset + iter/thin] <<- logProbTemps[1]
                 if(printTemps == 1.0) {
                     if(totalIters %% thinPrintTemps == 0) {
                         nimPrint(iter, asRow(Temps))

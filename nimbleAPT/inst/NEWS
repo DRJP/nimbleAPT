@@ -5,6 +5,8 @@ Release notes for each version of nimbleAPT
 -- Changed name to nimbleAPT (from nimble-snippets).
 -- Updates for compatibility with changes in nimble.
 -- Added vignette.
+-- Added resizeVector.
+-- Added logProbsVec as a means to track logProbs at temperature==1.
 
 
 1.0.2

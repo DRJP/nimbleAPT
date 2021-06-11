@@ -38,6 +38,36 @@ sampler_APT <- nimbleFunctionVirtual(
 ### utils::globalVariables("sampler_APT")
 
 
+#' @title Resize a vector.
+#' @description Returns a resized version of a vector.
+#' @param x A vector.
+#' @param length Desired length of the new vector.
+#' @return A vector.
+#' @details If the new vector is longer, new elements are initialised as zeros. Otherwise, the new vector is a clipped version of the old vector.
+#' @author David Pleydell
+#' @examples
+#' resizeVector(1:10, 11)
+#' resizeVector(1:11, 10)
+#'
+#' @import nimble
+#' @rdname resizeVector
+#' @export
+resizeVector = nimbleFunction(
+  run = function(x = double(1), length = double(0)) {
+    returnType(double(1))
+    lengthOri = length(x)
+    xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])
+    x         = nimNumeric(length=length, value=0)
+    if (lengthOri <= length) {
+      x[1:lengthOri] = xPrev[1:lengthOri]
+    } else {
+      x[1:length] = xPrev[1:length]
+    }
+    return(x[])
+  }
+)
+
+
 ######################################################################################
 ## buildAPT was adapted from nimble's buildMCMC to provide adaptive parallel tempering
 ######################################################################################
@@ -232,12 +262,11 @@ buildAPT <- nimbleFunction(
         mvSamples2Conf    <- conf$getMvSamplesConf(2)
         monitors          <- processMonitorNames(model, conf$monitors)
         monitors2         <- processMonitorNames(model, conf$monitors2)
+        thinFromConfVec   <- c(conf$thin, conf$thin2)  ## vector
+        thinToUseVec      <- c(0, 0)                      ## vector, needs to member data
         mvSamples         <- modelValues(mvSamplesConf)   ## For storing MCMC output (T=1)
         mvSamples2        <- modelValues(mvSamples2Conf)  ## For storing MCMC output (T=Tmax)
-        ##
-        loglikConf <- modelValuesConf(vars = c('logProbs'), types = c('double'), sizes = list(logProbs = 1))
-        mvLogProbs <- modelValues(loglikConf)
-        mvLogProbs['logProbs',]
+        logProbs          <- nimNumeric(length=0)
         ##
         if (monitorTmax==TRUE) {
             mvSamplesTmax  <- modelValues(mvSamplesConf)  ## For MCMC output (T=Tmax)
@@ -258,8 +287,16 @@ buildAPT <- nimbleFunction(
                    printTemps     = double(default=FALSE),
                    tuneTemper1    = double(default=10),
                    tuneTemper2    = double(default=1),
-                   progressBar    = logical(default=TRUE)) {
-        if(simulateAll) {
+                   progressBar    = logical(default=TRUE),
+                   thin           = integer(default = -1),
+                   thin2          = integer(default = -1)) {
+      ##
+      if(niter < 0)       stop('cannot specify niter < 0')
+      thinToUseVec <<- thinFromConfVec
+      if(thin  != -1) thinToUseVec[1] <<- thin
+      if(thin2 != -1) thinToUseVec[2] <<- thin2
+      ##
+      if(simulateAll) {
             simulate(model)     ## Default behavior excludes data nodes
         }
         if(resetAnyway==TRUE) { ## Force reset to be TRUE on first usage to avoid segfault.
@@ -284,25 +321,25 @@ buildAPT <- nimbleFunction(
             }
             mvSamples_offset  <- 0
             mvSamples2_offset <- 0
-            setSize(tempTraj,  niter/thin, nTemps)
-            resize(mvSamples,  niter/thin)
-            resize(mvSamples2, niter/thin2)
-            resize(mvLogProbs,     niter/thin)
+            setSize(tempTraj,  niter/thinToUseVec[1], nTemps)
+            resize(mvSamples,  niter/thinToUseVec[1])
+            resize(mvSamples2, niter/thinToUseVec[2])
             if (monitorTmax==TRUE) {
-                resize(mvSamplesTmax,  niter/thin)
-                resize(mvSamples2Tmax, niter/thin2)
+                resize(mvSamplesTmax,  niter/thinToUseVec[1])
+                resize(mvSamples2Tmax, niter/thinToUseVec[2])
             }
+            logProbs <<- resizeVector(logProbs, niter/thinToUseVec[1])
         } else {
             mvSamples_offset  <- getsize(mvSamples)
             mvSamples2_offset <- getsize(mvSamples2)
-            setSize(tempTraj,  niter/thin, nTemps)
-            resize(mvSamples,  mvSamples_offset  + niter/thin)
-            resize(mvSamples2, mvSamples2_offset + niter/thin2)
-            resize(mvLogProbs,     mvSamples_offset  + niter/thin)
+            setSize(tempTraj,  niter/thinToUseVec[1], nTemps)
+            resize(mvSamples,  mvSamples_offset  + niter/thinToUseVec[1])
+            resize(mvSamples2, mvSamples2_offset + niter/thinToUseVec[2])
             if (monitorTmax==TRUE) {
-                resize(mvSamplesTmax,  mvSamples_offset  + niter/thin)
-                resize(mvSamples2Tmax, mvSamples2_offset + niter/thin2)
+                resize(mvSamplesTmax,  mvSamples_offset  + niter/thinToUseVec[1])
+                resize(mvSamples2Tmax, mvSamples2_offset + niter/thinToUseVec[2])
             }
+            logProbs <<- resizeVector(logProbs, mvSamples_offset + niter/thinToUseVec[1])
         }
         ##### Monitors & Progress Bar #####
         if(dim(samplerTimes)[1] != length(samplerFunctions))
@@ -398,7 +435,7 @@ buildAPT <- nimbleFunction(
             ## Temperature adaptation scheme ##
             totalIters <<- totalIters + 1
             if (adaptTemps) {
-                ## gammaTSA <- 1 / ((totalIters/thin + 3) ^ 0.8)
+                ## gammaTSA <- 1 / ((totalIters/thinToUseVec[1] + 3) ^ 0.8)
                 gammaTSA    <- 1 / ((totalIters/tuneTemper1 + 3) ^ tuneTemper2)
                 TempsCurrent[1:nTemps] <<- Temps
                 for (ii in 1:nTemps_1) {
@@ -418,10 +455,10 @@ buildAPT <- nimbleFunction(
             ## Not implimented                          ##
             ##############################################
             ## MCMC Output ##
-            if(iter %% thin  == 0) {
-                nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thin,  nodes = monitors)
-                tempTraj[iter/thin, 1:nTemps] <<- Temps[1:nTemps]
-                mvLogProbs["logProbs", mvSamples_offset + iter/thin] <<- logProbTemps[1]
+            if(iter %% thinToUseVec[1]  == 0) {
+                nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thinToUseVec[1],  nodes = monitors)
+                tempTraj[iter/thinToUseVec[1], 1:nTemps] <<- Temps[1:nTemps]
+                logProbs[mvSamples_offset + iter/thinToUseVec[1]] <<- logProbTemps[1]
                 if(printTemps == 1.0) {
                     if(totalIters %% thinPrintTemps == 0) {
                         nimPrint(iter, asRow(Temps))
@@ -430,15 +467,15 @@ buildAPT <- nimbleFunction(
                     }
                 }
             }
-            if(iter %% thin2 == 0)
-                nimCopy(from = mvTemps, to = mvSamples2, row = 1, rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
+            if(iter %% thinToUseVec[2] == 0)
+                nimCopy(from = mvTemps, to = mvSamples2, row = 1, rowTo = mvSamples2_offset + iter/thinToUseVec[2], nodes = monitors2)
             if (monitorTmax==TRUE) {
-                if(iter %% thin  == 0)
+                if(iter %% thinToUseVec[1] == 0)
                     nimCopy(from = mvTemps, to = mvSamplesTmax, row = nTemps,
-                            rowTo = mvSamples_offset  + iter/thin,  nodes = monitors)
-                if(iter %% thin2 == 0)
+                            rowTo = mvSamples_offset  + iter/thinToUseVec[1],  nodes = monitors)
+                if(iter %% thinToUseVec[2] == 0)
                     nimCopy(from = mvTemps, to = mvSamples2Tmax, row = nTemps,
-                            rowTo = mvSamples2_offset + iter/thin2, nodes = monitors2)
+                            rowTo = mvSamples2_offset + iter/thinToUseVec[2], nodes = monitors2)
             }
             ## Progress Bar
             if(progressBar & (iter == progressBarNextFloor)) {

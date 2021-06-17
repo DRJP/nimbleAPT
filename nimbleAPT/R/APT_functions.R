@@ -312,7 +312,7 @@ buildAPT <- nimbleFunction(
         }
         accCountSwap[,] <<- 0 * accCountSwap[,]
         if(reset) {
-            nimPrint("Resetting MCMC samplers and initial values set from mvTemps row 1")
+            nimPrint("Resetting MCMC samplers.")
             for (tt in 1:nTemps) {
                 nimCopy(from = model, to = mvTemps, row = tt, logProb = TRUE)
             }

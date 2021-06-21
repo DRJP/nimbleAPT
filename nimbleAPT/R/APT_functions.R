@@ -215,7 +215,7 @@ buildAPT <- nimbleFunction(
             ULT <- 1E6
             nimPrint("ULT set to ", ULT)
         }
-        dotdotdotArgs      <- list(...)
+        dotdotdotArgs <- list(...)
         enableWAICargument <- if(!is.null(dotdotdotArgs$enableWAIC)) dotdotdotArgs$enableWAIC else nimbleOptions('MCMCenableWAIC')    ## accept enableWAIC argument regardless
         model              <- conf$model
         my_initializeModel <- initializeModel(model)
@@ -941,6 +941,7 @@ sampler_slice_tempered <- nimbleFunction(
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @importFrom stats runif
 sampler_RW_multinomial_tempered <- nimbleFunction(
     name = 'sampler_RW_multinomial_tempered',
     contains = sampler_APT,
@@ -1202,4 +1203,37 @@ plotTempTraj <- function(cAPT) {
     plot(1:nRow, log10(cAPT$tempTraj[,nCol]), typ="n", ylim=YLIM, xlab="Iteration", ylab="log10(Temperature)")
     for (ii in 1:nCol)
         lines(log10(cAPT$tempTraj[,ii]), col=myCols[ii])
+}
+
+
+
+## Copied from nimble since they do not export this function
+mcmc_checkWAICmonitors <- function(model, monitors, dataNodes) {
+    monitoredDetermNodes <- model$expandNodeNames(monitors)[model$isDeterm(model$expandNodeNames(monitors))]
+    if(length(monitoredDetermNodes) > 0) {
+        monitors <- monitors[- which(monitors %in% model$getVarNames(nodes = monitoredDetermNodes))]
+    }
+    thisNodes <- model$getNodeNames(stochOnly = TRUE, topOnly = TRUE)
+    thisVars <- model$getVarNames(nodes = thisNodes)
+    thisVars <- thisVars[!(thisVars %in% monitors)]
+    while(length(thisVars) > 0) {
+        nextNodes <- model$getDependencies(thisVars, stochOnly = TRUE, omit = monitoredDetermNodes, self = FALSE, includeData = TRUE)
+        if(any(nextNodes %in% dataNodes)) {
+            badDataNodes <- dataNodes[dataNodes %in% nextNodes]
+            if(length(badDataNodes) > 10) {
+                badDataNodes <- c(badDataNodes[1:10], "...")
+            }
+            stop(paste0("In order for a valid WAIC calculation, all parameters of",
+                        " data nodes in the model must be monitored, or be",
+                        " downstream from monitored nodes.",
+                        " See help(buildMCMC) for more information on valid sets of",
+                        " monitored nodes for WAIC calculations.", "\n",
+                        " Currently, the following data nodes have un-monitored",
+                        " upstream parameters:", "\n ",
+                        paste0(badDataNodes, collapse = ", ")))
+        }
+        thisVars <- model$getVarNames(nodes = nextNodes)
+        thisVars <- thisVars[!(thisVars %in% monitors)]
+    }
+    message('Monitored nodes are valid for WAIC')
 }

@@ -215,6 +215,8 @@ buildAPT <- nimbleFunction(
             ULT <- 1E6
             nimPrint("ULT set to ", ULT)
         }
+        dotdotdotArgs      <- list(...)
+        enableWAICargument <- if(!is.null(dotdotdotArgs$enableWAIC)) dotdotdotArgs$enableWAIC else nimbleOptions('MCMCenableWAIC')    ## accept enableWAIC argument regardless
         model              <- conf$model
         my_initializeModel <- initializeModel(model)
         mvSaved            <- modelValues(model)                   ## Used to restore model following rejection in MCMC
@@ -276,6 +278,18 @@ buildAPT <- nimbleFunction(
         progressBarLength <- 52     ## Multiples of 4 only
         resetAnyway       <- TRUE
         totalIters        <- 1
+        ## WAIC setup:
+        dataNodes <- model$getNodeNames(dataOnly = TRUE)
+        dataNodeLength <- length(dataNodes)
+        sampledNodes <- model$getVarNames(includeLogProb = FALSE, nodes = monitors)
+        sampledNodes <- sampledNodes[sampledNodes %in% model$getVarNames(includeLogProb = FALSE)]
+        paramDeps <- model$getDependencies(sampledNodes, self = FALSE, downstream = TRUE)
+        allVarsIncludingLogProbs <- model$getVarNames(includeLogProb = TRUE)
+        enableWAIC <- enableWAICargument || conf$enableWAIC   ## enableWAIC comes from MCMC configuration, or from argument to buildMCMC
+        if(enableWAIC) {
+          if(dataNodeLength == 0)   stop('WAIC cannot be calculated, as no data nodes were detected in the model.')
+          mcmc_checkWAICmonitors(model = model, monitors = sampledNodes, dataNodes = dataNodes)
+        }
     },
     #################################################
     run = function(niter          = integer(),
@@ -517,6 +531,48 @@ buildAPT <- nimbleFunction(
         mvTemps2model = function(row = double()) {
             ## Useful in R for exploring node values at each temp
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
+        },
+        calculateWAIC = function(nburnin = integer(default = 0),
+                                 burnIn = integer(default = 0)) {
+          if(!enableWAIC) {
+            print('Error: must set enableWAIC = TRUE in buildMCMC. See help(buildMCMC) for additional information.')
+            return(NaN)
+          }
+          if(burnIn != 0) {
+            print('Warning: \'burnIn\' argument is deprecated and will not be supported in future versions of NIMBLE. Please use the \'nburnin\' argument instead.')
+            ## If nburnin has not been changed, replace with burnIn value
+            if(nburnin == 0)   nburnin <- burnIn
+          }
+          nburninPostThinning <- ceiling(nburnin/thinToUseVec[1])
+          numMCMCSamples <- getsize(mvSamples) - nburninPostThinning
+          if((numMCMCSamples) < 2) {
+            print('Error: need more than one post burn-in MCMC samples')
+            return(-Inf)
+          }
+          logPredProbs <- matrix(nrow = numMCMCSamples, ncol = dataNodeLength)
+          logAvgProb <- 0
+          pWAIC <- 0
+          currentVals <- values(model, allVarsIncludingLogProbs)
+
+          for(i in 1:numMCMCSamples) {
+            copy(mvSamples, model, nodesTo = sampledNodes, row = i + nburninPostThinning)
+            model$simulate(paramDeps)
+            model$calculate(dataNodes)
+            for(j in 1:dataNodeLength)
+              logPredProbs[i,j] <- model$getLogProb(dataNodes[j])
+          }
+          for(j in 1:dataNodeLength) {
+            maxLogPred <- max(logPredProbs[,j])
+            thisDataLogAvgProb <- maxLogPred + log(mean(exp(logPredProbs[,j] - maxLogPred)))
+            logAvgProb <- logAvgProb + thisDataLogAvgProb
+            pointLogPredVar <- var(logPredProbs[,j])
+            pWAIC <- pWAIC + pointLogPredVar
+          }
+          WAIC <- -2*(logAvgProb - pWAIC)
+          values(model, allVarsIncludingLogProbs) <<- currentVals
+          if(is.nan(WAIC)) print('WAIC was calculated as NaN.  You may need to add monitors to model latent states, in order for a valid WAIC calculation.')
+          returnType(double())
+          return(WAIC)
         }
     )    ## ,
     ## where = getLoadingNamespace()

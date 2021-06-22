@@ -52,6 +52,10 @@ sampler_APT <- nimbleFunctionVirtual(
 #' @import nimble
 #' @rdname resizeVector
 #' @export
+#' @examples
+#' x = nimNumeric(length=10)
+#' x = resizeVector(x, length=11)
+#' length(x)
 resizeVector = nimbleFunction(
   run = function(x = double(1), length = double(0)) {
     returnType(double(1))
@@ -173,30 +177,40 @@ resizeVector = nimbleFunction(
 ## ##' \eqn{p(y|theta)} will be simulated from the posterior samples of
 ## ##' \eqn{theta}.
 ##' @author David Pleydell (adapted from code by Daniel Turek).
-####################################################################################################################
-## ##' @examples                                                                                                  ##
-## ##'                                                                                                            ##
-## ##' \dontrun{                                                                                                  ##
-## ##' code <- nimbleCode({                                                                                       ##
-## ##'     mu ~ dnorm(0, 1)                                                                                       ##
-## ##'     x ~ dnorm(mu, 1)                                                                                       ##
-## ##' })                                                                                                         ##
-## ##' Rmodel <- nimbleModel(code)                                                                                ##
-## ##' conf <- configureMCMC(Rmodel)                                                                              ##
-## ##' nIter <- 1E5                                                                                               ##
-## ##' Rmcmc <- buildAPT(conf, Temps=1:10, monitorTmax=TRUE, thinPrintTemps=nIter/10)                             ##
-## ##' Cmodel <- compileNimble(Rmodel)                                                                            ##
-## ##' Cmcmc <- compileNimble(Rmcmc, project=Rmodel)                                                              ##
-## ##' Cmcmc$run(nIter, reset=TRUE, resetTempering=TRUE, adaptTempts=TRUE, printTemps=TRUE, progressBar=FALSE)    ##
-## ##' plot.tempTraj(Cmcmc)  ## Plots the trajectories of the temperature ladder                                  ##
-## ##' Cmcmc$run(nIter, reset=FALSE, resetTempering=FALSE, adaptTempts=FALSE, printTemps=FALSE, progressBar=TRUE) ##
-## ##' samples <- tail(as.matrix(Cmcmc$mvSamples), n=nIter)                                                       ##
-## ##' summary(samples)                                                                                           ##
-## ##' samplesTM <- tail(as.matrix(Cmcmc$mvSamplesTmax), n=nIter)                                                 ##
-## ##' summary(samplesTM)                                                                                         ##
-## ## ##' WAIC <- Cmcmc$calculateWAIC(nburnin = 1000)                                                             ##
-## ##' }                                                                                                          ##
-####################################################################################################################
+##' @examples
+##'
+##' \dontrun{
+##' bugsCode <- nimbleCode({
+##'   for (ii in 1:nObs) {
+##'     y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
+##'   }
+##'   absCentroids[1:2] <- abs(centroids[1:2])
+##'   for (ii in 1:2) {
+##'     centroids[ii] ~ dnorm(0, sd=1E3)
+##'   }
+##' })
+##'
+##' nObs      <- 100
+##' centroids <- rep(-3, 2)
+##' covChol   <- chol(diag(2))
+##'
+##' rModel <- nimbleModel(bugsCode,  constants=list(nObs=nObs, cholCov=covChol), inits=list(centroids=centroids))
+##' simulate(rModel, "y")
+##' rModel <- nimbleModel(bugsCode, constants=list(nObs=nObs, cholCov=covChol), data=list(y=rModel$y), inits=list(centroids=centroids))
+##' cModel <- compileNimble(rModel)
+##'
+##' simulate(cModel, "centroids")
+##'
+##' conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
+##' conf$removeSamplers()
+##' conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+##' conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+##' aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
+##' aptC <- compileNimble(aptR)
+##' aptC$run(niter=15000)
+##' WAIC <- aptC$calculateWAIC(nburnin = 5000)
+##' }
+#'
 #' @import nimble
 #' @export
 buildAPT <- nimbleFunction(

@@ -26,7 +26,7 @@ model is returned.}
 \code{conf} is a NIMBLE model object}
 }
 \description{
-Adapted from buildMCMC. Accepts a single required argument, which
+Adapted from nimble::buildMCMC. Accepts a single required argument, which
 may be of class MCMCconf, or inherit from class modelBaseClass (a
 NIMBLE model object).  Returns an APT function; see details
 section.
@@ -130,6 +130,10 @@ aptC <- compileNimble(aptR)
 aptC$run(niter=15000)
 WAIC <- aptC$calculateWAIC(nburnin = 5000)
 }
+
+
+
+
 
 }
 \author{

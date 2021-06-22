@@ -80,7 +80,7 @@ sampler_APT <- nimbleFunctionVirtual(
 
 ##' Create an APT function, from an MCMCconf object
 ##'
-##' Adapted from buildMCMC. Accepts a single required argument, which
+##' Adapted from nimble::buildMCMC. Accepts a single required argument, which
 ##' may be of class MCMCconf, or inherit from class modelBaseClass (a
 ##' NIMBLE model object).  Returns an APT function; see details
 ##' section.
@@ -221,6 +221,10 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' aptC$run(niter=15000)
 ##' WAIC <- aptC$calculateWAIC(nburnin = 5000)
 ##' }
+##'
+##'
+##'
+##'
 #'
 #' @import nimble
 #' @export
@@ -572,7 +576,7 @@ buildAPT <- nimbleFunction(
         calculateWAIC = function(nburnin = integer(default = 0),
                                  burnIn = integer(default = 0)) {
           if(!enableWAIC) {
-            print('Error: must set enableWAIC = TRUE in buildMCMC. See help(buildMCMC) for additional information.')
+            print('Error: must set enableWAIC = TRUE in buildAPT. See help(buildMCMC) for additional information.')
             return(NaN)
           }
           if(burnIn != 0) {

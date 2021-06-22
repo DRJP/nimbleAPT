@@ -24,6 +24,9 @@ If the new vector is longer, new elements are initialised as zeros. Otherwise, t
 resizeVector(1:10, 11)
 resizeVector(1:11, 10)
 
+x = nimNumeric(length=10)
+x = resizeVector(x, length=11)
+length(x)
 }
 \author{
 David Pleydell

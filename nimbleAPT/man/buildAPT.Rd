@@ -92,6 +92,41 @@ taking care to compile in the same project as the R model object, using:
 The compiled function will function identically to the uncompiled object,
 except acting on the compiled model object.
 }
+\examples{
+
+\dontrun{
+bugsCode <- nimbleCode({
+  for (ii in 1:nObs) {
+    y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
+  }
+  absCentroids[1:2] <- abs(centroids[1:2])
+  for (ii in 1:2) {
+    centroids[ii] ~ dnorm(0, sd=1E3)
+  }
+})
+
+nObs      <- 100
+centroids <- rep(-3, 2)
+covChol   <- chol(diag(2))
+
+rModel <- nimbleModel(bugsCode,  constants=list(nObs=nObs, cholCov=covChol), inits=list(centroids=centroids))
+simulate(rModel, "y")
+rModel <- nimbleModel(bugsCode, constants=list(nObs=nObs, cholCov=covChol), data=list(y=rModel$y), inits=list(centroids=centroids))
+cModel <- compileNimble(rModel)
+
+simulate(cModel, "centroids")
+
+conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
+conf$removeSamplers()
+conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
+aptC <- compileNimble(aptR)
+aptC$run(niter=15000)
+WAIC <- aptC$calculateWAIC(nburnin = 5000)
+}
+
+}
 \author{
 David Pleydell (adapted from code by Daniel Turek).
 }

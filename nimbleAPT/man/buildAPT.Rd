@@ -133,5 +133,5 @@ WAIC <- aptC$calculateWAIC(nburnin = 5000)
 
 }
 \author{
-David Pleydell (adapted from code by Daniel Turek).
+David Pleydell, Daniel Turek
 }

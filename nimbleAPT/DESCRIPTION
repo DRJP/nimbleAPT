@@ -3,10 +3,23 @@ Type: Package
 Title: Adaptive Parallel Tempering for 'nimble'
 Version: 1.0.4
 Encoding: UTF-8
-Date: 2020-09-03
-Author: David Pleydell
+Date: 2021-06-22
 Maintainer: David Pleydell <david.pleydell@inrae.fr>
-Description: Functions for adaptive parallel tempering (APT) with nimble models. Adapted from 'Lacki' & 'Miasojedow' (2016) <DOI: 10.1007/s11222-015-9579-0> and 'Miasojedow, Moulines and Vihola' (2013) <DOI: 10.1080/10618600.2013.778779>.
+Authors@R: c(
+ person("David", "Pleydell", email="david.pleydell@inrae.fr", role=c("aut","cre","cph")),
+ person("Daniel", "Turek", role = c( "ctb", "cph")),
+ person("Perry", "de Valpine", role = "cph"),
+ person("Christopher", "Paciorek", "paciorek@stat.berkeley.edu", role = "cph"),
+ person("Clifford", "Anderson-Bergman", role = "cph"),
+ person("Nick", "Michaud", role = "cph"),
+ person("Fritz", "Obermeyer", role = "cph"),
+ person("Claudia",  "Wehrhahn Cortes", role = "cph"),
+ person("Abel", "Rodriguez", role = "cph"),
+ person("Sally", "Paganin", role = "cph"),
+ person("Dao", "Nguyen ", role = "cph"),
+ person("Duncan", "Temple Lang ", role = "cph"))
+URL: https://github.com/DRJP/nimbleAPT
+Description: Functions for adaptive parallel tempering (APT) with nimble models. Adapted from 'Lacki' & 'Miasojedow' (2016) <DOI:10.1007/s11222-015-9579-0> and 'Miasojedow, Moulines and Vihola' (2013) <DOI:10.1080/10618600.2013.778779>.
 License: BSD_3_clause + file LICENSE | GPL (>= 2)
 Depends:
     R (>= 3.1.2),

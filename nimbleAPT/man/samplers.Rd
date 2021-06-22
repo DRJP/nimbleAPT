@@ -119,7 +119,5 @@ Shaby, B. and M. Wells (2011). \emph{Exploring an Adaptive Metropolis Algorithm}
 \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{runMCMC}}
 }
 \author{
-David Pleydell
-
-David Pleydell (based on code from Daniel Turek)
+David Pleydell, Daniel Turek
 }

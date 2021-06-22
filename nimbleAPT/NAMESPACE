@@ -2,7 +2,6 @@
 
 export(buildAPT)
 export(plotTempTraj)
-export(resizeVector)
 export(sampler_APT)
 export(sampler_RW_block_tempered)
 export(sampler_RW_multinomial_tempered)

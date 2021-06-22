@@ -19,8 +19,6 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 #'
 #' @details APT samplers must include "contains = sampler_APT" and include a setTemp method
 #'
-#' @author David Pleydell
-#'
 #' @rdname samplers
 #' @import nimble
 #' @import methods
@@ -38,38 +36,42 @@ sampler_APT <- nimbleFunctionVirtual(
 ### utils::globalVariables("sampler_APT")
 
 
-#' @title Resize a vector.
-#' @description Returns a resized version of a vector.
-#' @param x A vector.
-#' @param length Desired length of the new vector.
-#' @return A vector.
-#' @details If the new vector is longer, new elements are initialised as zeros. Otherwise, the new vector is a clipped version of the old vector.
-#' @author David Pleydell
-#' @examples
-#' resizeVector(1:10, 11)
-#' resizeVector(1:11, 10)
-#'
-#' @import nimble
-#' @name resizeVector
-#' @export
-#' @examples
-#' x = nimNumeric(length=10)
-#' x = resizeVector(x, length=11)
-#' length(x)
-resizeVector = nimbleFunction(
-  run = function(x = double(1), length = double(0)) {
-    returnType(double(1))
-    lengthOri = length(x)
-    xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])
-    x         = nimNumeric(length=length, value=0)
-    if (lengthOri <= length) {
-      x[1:lengthOri] = xPrev[1:lengthOri]
-    } else {
-      x[1:length] = xPrev[1:length]
-    }
-    return(x[])
-  }
-)
+#######################################################################################################################################################
+## #' @title Resize a vector.                                                                                                                        ##
+## #' @description Returns a resized version of a vector.                                                                                            ##
+## #' @param x A vector.                                                                                                                             ##
+## #' @param length Desired length of the new vector.                                                                                                ##
+## #' @return A vector.                                                                                                                              ##
+## #' @details If the new vector is longer, new elements are initialised as zeros. Otherwise, the new vector is a clipped version of the old vector. ##
+## #' @author David Pleydell                                                                                                                         ##
+## #' @examples                                                                                                                                      ##
+## #' resizeVector(1:10, 11)                                                                                                                         ##
+## #' resizeVector(1:11, 10)                                                                                                                         ##
+## #'                                                                                                                                                ##
+## #' @import nimble                                                                                                                                 ##
+## #' @name resizeVector                                                                                                                             ##
+## #'
+## #' @examples                                                                                                                                      ##
+## #' x = nimNumeric(length=10)                                                                                                                      ##
+## #' x = resizeVector(x, length=11)                                                                                                                 ##
+## #' length(x)                                                                                                                                      ##
+## resizeVector = nimbleFunction(                                                                                                                    ##
+##   run = function(x = double(1), length = double(0)) {                                                                                             ##
+##     returnType(double(1))                                                                                                                         ##
+##     lengthOri = length(x)                                                                                                                         ##
+##     xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])                                                                                ##
+##     x         = nimNumeric(length=length, value=0)                                                                                                ##
+##     if (lengthOri <= length) {                                                                                                                    ##
+##       x[1:lengthOri] = xPrev[1:lengthOri]                                                                                                         ##
+##     } else {                                                                                                                                      ##
+##       x[1:length] = xPrev[1:length]                                                                                                               ##
+##     }                                                                                                                                             ##
+##     return(x[])                                                                                                                                   ##
+##   }                                                                                                                                               ##
+## )                                                                                                                                                 ##
+#######################################################################################################################################################
+
+
 
 
 ######################################################################################
@@ -176,7 +178,11 @@ resizeVector = nimbleFunction(
 ## ##' downstream of the monitored parameters that are necessary to calculate
 ## ##' \eqn{p(y|theta)} will be simulated from the posterior samples of
 ## ##' \eqn{theta}.
-##' @author David Pleydell (adapted from code by Daniel Turek).
+##'
+##' @author David Pleydell, Daniel Turek
+##'
+##' @name buildAPT
+##'
 ##' @examples
 ##'
 ##' \dontrun{
@@ -550,6 +556,18 @@ buildAPT <- nimbleFunction(
         mvTemps2model = function(row = double()) {
             ## Useful in R for exploring node values at each temp
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
+        },
+        resizeVector = function(x = double(1), length = double(0)) {
+          returnType(double(1))
+          lengthOri = length(x)
+          xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])
+          x         = nimNumeric(length=length, value=0)
+          if (lengthOri <= length) {
+            x[1:lengthOri] = xPrev[1:lengthOri]
+          } else {
+            x[1:length] = xPrev[1:length]
+          }
+          return(x[])
         },
         calculateWAIC = function(nburnin = integer(default = 0),
                                  burnIn = integer(default = 0)) {
@@ -1176,7 +1194,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #'
 #' @seealso \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{runMCMC}}
 #'
-#' @author David Pleydell (based on code from Daniel Turek)
+#' @author David Pleydell, Daniel Turek
 #'
 #' @references
 #'

@@ -215,6 +215,8 @@ buildAPT <- nimbleFunction(
             ULT <- 1E6
             nimPrint("ULT set to ", ULT)
         }
+        dotdotdotArgs <- list(...)
+        enableWAICargument <- if(!is.null(dotdotdotArgs$enableWAIC)) dotdotdotArgs$enableWAIC else nimbleOptions('MCMCenableWAIC')    ## accept enableWAIC argument regardless
         model              <- conf$model
         my_initializeModel <- initializeModel(model)
         mvSaved            <- modelValues(model)                   ## Used to restore model following rejection in MCMC
@@ -276,6 +278,18 @@ buildAPT <- nimbleFunction(
         progressBarLength <- 52     ## Multiples of 4 only
         resetAnyway       <- TRUE
         totalIters        <- 1
+        ## WAIC setup:
+        dataNodes <- model$getNodeNames(dataOnly = TRUE)
+        dataNodeLength <- length(dataNodes)
+        sampledNodes <- model$getVarNames(includeLogProb = FALSE, nodes = monitors)
+        sampledNodes <- sampledNodes[sampledNodes %in% model$getVarNames(includeLogProb = FALSE)]
+        paramDeps <- model$getDependencies(sampledNodes, self = FALSE, downstream = TRUE)
+        allVarsIncludingLogProbs <- model$getVarNames(includeLogProb = TRUE)
+        enableWAIC <- enableWAICargument || conf$enableWAIC   ## enableWAIC comes from MCMC configuration, or from argument to buildMCMC
+        if(enableWAIC) {
+          if(dataNodeLength == 0)   stop('WAIC cannot be calculated, as no data nodes were detected in the model.')
+          mcmc_checkWAICmonitors(model = model, monitors = sampledNodes, dataNodes = dataNodes)
+        }
     },
     #################################################
     run = function(niter          = integer(),
@@ -517,6 +531,48 @@ buildAPT <- nimbleFunction(
         mvTemps2model = function(row = double()) {
             ## Useful in R for exploring node values at each temp
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
+        },
+        calculateWAIC = function(nburnin = integer(default = 0),
+                                 burnIn = integer(default = 0)) {
+          if(!enableWAIC) {
+            print('Error: must set enableWAIC = TRUE in buildMCMC. See help(buildMCMC) for additional information.')
+            return(NaN)
+          }
+          if(burnIn != 0) {
+            print('Warning: \'burnIn\' argument is deprecated and will not be supported in future versions of NIMBLE. Please use the \'nburnin\' argument instead.')
+            ## If nburnin has not been changed, replace with burnIn value
+            if(nburnin == 0)   nburnin <- burnIn
+          }
+          nburninPostThinning <- ceiling(nburnin/thinToUseVec[1])
+          numMCMCSamples <- getsize(mvSamples) - nburninPostThinning
+          if((numMCMCSamples) < 2) {
+            print('Error: need more than one post burn-in MCMC samples')
+            return(-Inf)
+          }
+          logPredProbs <- matrix(nrow = numMCMCSamples, ncol = dataNodeLength)
+          logAvgProb <- 0
+          pWAIC <- 0
+          currentVals <- values(model, allVarsIncludingLogProbs)
+
+          for(i in 1:numMCMCSamples) {
+            copy(mvSamples, model, nodesTo = sampledNodes, row = i + nburninPostThinning)
+            model$simulate(paramDeps)
+            model$calculate(dataNodes)
+            for(j in 1:dataNodeLength)
+              logPredProbs[i,j] <- model$getLogProb(dataNodes[j])
+          }
+          for(j in 1:dataNodeLength) {
+            maxLogPred <- max(logPredProbs[,j])
+            thisDataLogAvgProb <- maxLogPred + log(mean(exp(logPredProbs[,j] - maxLogPred)))
+            logAvgProb <- logAvgProb + thisDataLogAvgProb
+            pointLogPredVar <- var(logPredProbs[,j])
+            pWAIC <- pWAIC + pointLogPredVar
+          }
+          WAIC <- -2*(logAvgProb - pWAIC)
+          values(model, allVarsIncludingLogProbs) <<- currentVals
+          if(is.nan(WAIC)) print('WAIC was calculated as NaN.  You may need to add monitors to model latent states, in order for a valid WAIC calculation.')
+          returnType(double())
+          return(WAIC)
         }
     )    ## ,
     ## where = getLoadingNamespace()
@@ -885,6 +941,7 @@ sampler_slice_tempered <- nimbleFunction(
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @importFrom stats runif
 sampler_RW_multinomial_tempered <- nimbleFunction(
     name = 'sampler_RW_multinomial_tempered',
     contains = sampler_APT,
@@ -1146,4 +1203,37 @@ plotTempTraj <- function(cAPT) {
     plot(1:nRow, log10(cAPT$tempTraj[,nCol]), typ="n", ylim=YLIM, xlab="Iteration", ylab="log10(Temperature)")
     for (ii in 1:nCol)
         lines(log10(cAPT$tempTraj[,ii]), col=myCols[ii])
+}
+
+
+
+## Copied from nimble since they do not export this function
+mcmc_checkWAICmonitors <- function(model, monitors, dataNodes) {
+    monitoredDetermNodes <- model$expandNodeNames(monitors)[model$isDeterm(model$expandNodeNames(monitors))]
+    if(length(monitoredDetermNodes) > 0) {
+        monitors <- monitors[- which(monitors %in% model$getVarNames(nodes = monitoredDetermNodes))]
+    }
+    thisNodes <- model$getNodeNames(stochOnly = TRUE, topOnly = TRUE)
+    thisVars <- model$getVarNames(nodes = thisNodes)
+    thisVars <- thisVars[!(thisVars %in% monitors)]
+    while(length(thisVars) > 0) {
+        nextNodes <- model$getDependencies(thisVars, stochOnly = TRUE, omit = monitoredDetermNodes, self = FALSE, includeData = TRUE)
+        if(any(nextNodes %in% dataNodes)) {
+            badDataNodes <- dataNodes[dataNodes %in% nextNodes]
+            if(length(badDataNodes) > 10) {
+                badDataNodes <- c(badDataNodes[1:10], "...")
+            }
+            stop(paste0("In order for a valid WAIC calculation, all parameters of",
+                        " data nodes in the model must be monitored, or be",
+                        " downstream from monitored nodes.",
+                        " See help(buildMCMC) for more information on valid sets of",
+                        " monitored nodes for WAIC calculations.", "\n",
+                        " Currently, the following data nodes have un-monitored",
+                        " upstream parameters:", "\n ",
+                        paste0(badDataNodes, collapse = ", ")))
+        }
+        thisVars <- model$getVarNames(nodes = nextNodes)
+        thisVars <- thisVars[!(thisVars %in% monitors)]
+    }
+    message('Monitored nodes are valid for WAIC')
 }

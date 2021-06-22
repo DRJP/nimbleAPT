@@ -126,7 +126,7 @@ So let's try with adaptive parallel tempering (APT).
 
 ```{r fitting2, fig.width=7, fig.height=7}
 
-conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids")
+conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
 conf$removeSamplers()
 conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
@@ -149,9 +149,14 @@ plot(as.mcmc(samples))
 
 plot(as.mcmc(aptC$logProbs))
 
+aptC$calculateWAIC()
+
+
 ```
 
 We can see that jumps between nodes (black lines) are frequent and that each node has been sampled (red points).
 The precision with which the weight of each posterior mode is estimated can be increased by increasing
 1. the number of rungs in the temperature ladder, and moreover
 2. the number of iterations (niter).
+
+Finally, note that WAIC can be computed in exactly the same way as in nimble. See the section 'calculating WAIC' in the nimble manual for further etails.

@@ -126,7 +126,7 @@ So let's try with adaptive parallel tempering (APT).
 
 ```{r fitting2, fig.width=7, fig.height=7}
 
-conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids")
+conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
 conf$removeSamplers()
 conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
@@ -148,6 +148,9 @@ legend("topleft", legend=c("jumps", "samples"), col=c("black","red"), pch=c("_",
 plot(as.mcmc(samples))
 
 plot(as.mcmc(aptC$logProbs))
+
+aptC$calculateWAIC()
+
 
 ```
 

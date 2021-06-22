@@ -109,9 +109,14 @@ nObs      <- 100
 centroids <- rep(-3, 2)
 covChol   <- chol(diag(2))
 
-rModel <- nimbleModel(bugsCode,  constants=list(nObs=nObs, cholCov=covChol), inits=list(centroids=centroids))
+rModel <- nimbleModel(bugsCode,
+                      constants=list(nObs=nObs, cholCov=covChol),
+                      inits=list(centroids=centroids))
 simulate(rModel, "y")
-rModel <- nimbleModel(bugsCode, constants=list(nObs=nObs, cholCov=covChol), data=list(y=rModel$y), inits=list(centroids=centroids))
+rModel <- nimbleModel(bugsCode,
+                      constants=list(nObs=nObs, cholCov=covChol),
+                      data=list(y=rModel$y),
+                      inits=list(centroids=centroids))
 cModel <- compileNimble(rModel)
 
 simulate(cModel, "centroids")

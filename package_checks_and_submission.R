@@ -8,13 +8,13 @@ library(here)
 setwd(here())
 setwd("nimbleAPT")
 
-check()
+rhub::check()
 
 # From https://www.mzes.uni-mannheim.de/socialsciencedatalab/article/r-package/#subsection6-1
-# Check for CRAN specific requirements using rhub and 
-# save it in the results objects 
-results <- (rhub::check_for_cran())$cran_summary()  
-# Get the summary of your results 
+# Check for CRAN specific requirements using rhub and
+# save it in the results objects
+results <- (rhub::check_for_cran())$cran_summary()
+# Get the summary of your results
 results$cran_summary()
 
 # Generate your cran-comments.md, then you copy-paste the output from the function above

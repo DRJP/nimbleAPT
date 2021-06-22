@@ -13,3 +13,4 @@ nimble-snippets.Rcheck
 nimbleAPT.Rcheck
 nimbleAPT/vignettes/*.html
 nimbleAPT/vignettes/*.R
+.Rbuildignore

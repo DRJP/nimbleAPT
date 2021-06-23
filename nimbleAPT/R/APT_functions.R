@@ -495,9 +495,12 @@ buildAPT <- nimbleFunction(
             }
             ##############################################
             ## Automatically drop unneeded temperatures ##
-            ## Not implimented                          ##
             ##############################################
+            ## Not implimented
+            ##
+            #################
             ## MCMC Output ##
+            #################
             if(iter %% thinToUseVec[1]  == 0) {
                 nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thinToUseVec[1],  nodes = monitors)
                 tempTraj[iter/thinToUseVec[1], 1:nTemps] <<- Temps[1:nTemps]
@@ -792,7 +795,8 @@ sampler_RW_block_tempered <- nimbleFunction(
         my_decideAndJump        <- decideAndJump(model, mvSaved, calcNodes)
         my_calcAdaptationFactor <- calcAdaptationFactor(d, adaptFactorExponent)
         ## checks
-        if(class(propCov)      != 'matrix')  stop('propCov must be a matrix\n')
+        ## browser()
+        if(class(propCov)[1]   != 'matrix')  stop('propCov must be a matrix\n')
         if(class(propCov[1,1]) != 'numeric') stop('propCov matrix must be numeric\n')
         if(!all(dim(propCov)   == d))        stop('propCov matrix must have dimension ', d, 'x', d, '\n')
         if(!isSymmetric(propCov))            stop('propCov matrix must be symmetric')

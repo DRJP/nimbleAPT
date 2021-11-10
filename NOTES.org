@@ -3,22 +3,23 @@
 *** R CMD check gives
     buildAPT: no visible binding for global variable ‘sampler_APT’
 *** buildAPT in APT_demo_DEBUG.R gives
-    Error in getClass(Class, where = topenv(parent.frame())) : 
+    Error in getClass(Class, where = topenv(parent.frame())) :
   “nfRefClass_R_GlobalEnv45” is not a defined class
 ** WITH SUGGESTED FIX  -  USE BRANCH "suggestedFix"
 *** This does enable the problem line in APT_demo_DEBUG to run
 *** BUT...
-*** roxygenize() then started giving 
-    Error in assign(mname, def, where) : 
+*** roxygenize() then started giving
+    Error in assign(mname, def, where) :
       cannot add bindings to a locked environment
-** I added "methods" to some @import arguments and roxygenize() started giving 
-    Error in assignClassDef(Class, classDef, where) : 
+** I added "methods" to some @import arguments and roxygenize() started giving
+    Error in assignClassDef(Class, classDef, where) :
       class “nfRefClass_NimbleSnippets43” has a locked definition in package ‘NimbleSnippets’
 ** It may be possible to use roxygenise without the where fix and the swap the where arguments.
+
 * Adding nimble in DESCRIPTION is important
 ** Without
 > roxygenize()
-Error in eval(expr, envir, enclos) : 
+Error in eval(expr, envir, enclos) :
   could not find function "nimbleFunction"
 ** With
 > roxygenize()

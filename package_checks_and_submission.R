@@ -23,6 +23,12 @@ results$cran_summary()
 # Alternatively
 devtools::check_rhub()
 
+# Or... alternatively, perhaps this can help...
+# https://stackoverflow.com/questions/63586750/error-with-ubuntu-linux-when-running-check-rhub-due-to-xml-library
+# platforms()
+res  = rhub::check(platform="ubuntu-gcc-release")
+res2 = rhub::check(platform="ubuntu-gcc-devel")
+## suggests it's an Eigen problem
 
 # Generate your cran-comments.md, then you copy-paste the output from the function above
 usethis::use_cran_comments()

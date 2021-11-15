@@ -17,12 +17,10 @@ License: BSD_3_clause + file LICENSE
 Copyright: See COPYRIGHTS file.
 Depends:
     R (>= 3.1.2),
-    nimble,
-    methods
+    nimble
 RoxygenNote: 7.1.1
 Suggests:
     knitr,
-    rmarkdown,
-	coda
+    rmarkdown
 VignetteBuilder: knitr
 Note: The APT samplers within this package were adapted from MCMC samplers provided in the NIMBLE package (https://github.com/nimble-dev/nimble). Those original NIMBLE functions were written by the four members of the NIMBLE Development Team cited above. All adaptations were the work of the package developer. Many thanks to the NIMBLE Development Team for their support during the development of this package.

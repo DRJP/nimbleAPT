@@ -3,10 +3,10 @@ sessionInfo()
 detach("package:nimbleAPT")
 unloadNamespace("nimbleAPT")
 
-setwd(here::here('nimbleAPT'))
+setwd(here::here('nimbleAPT/nimbleAPT'))
 roxygen2::roxygenise()
 
-setwd('/home/pleydell/nimbleProjects/nimbleAPT')
+setwd(here::here('nimbleAPT'))
 devtools::build("nimbleAPT", vignettes=TRUE) # FALSE
 
 devtools::check("nimbleAPT")

@@ -5,11 +5,16 @@
 ## Tests the package can build and install on various platforms
 library(rhub)
 library(here)
-setwd(here())
-setwd("nimbleAPT")
+setwd(here("nimbleAPT/nimbleAPT"))
 getwd()
 
 rhub::check()
+## 11h53 ran command - 12h03 preperror email
+## 15: Ubuntu Linux 20.04.1 LTS, R-devel, GCC (ubuntu-gcc-devel)
+
+## Info on last submission to rhub
+rhub::last_check()
+
 
 # From https://www.mzes.uni-mannheim.de/socialsciencedatalab/article/r-package/#subsection6-1
 # Check for CRAN specific requirements using rhub and
@@ -29,6 +34,9 @@ devtools::check_rhub()
 res  = rhub::check(platform="ubuntu-gcc-release")
 res2 = rhub::check(platform="ubuntu-gcc-devel")
 ## suggests it's an Eigen problem
+
+## 12h36 ran command - 12h4x preperror email ??
+
 
 # Generate your cran-comments.md, then you copy-paste the output from the function above
 usethis::use_cran_comments()

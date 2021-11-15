@@ -21,7 +21,6 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 #'
 #' @rdname samplers
 #' @import nimble
-#' @import methods
 #' @export
 sampler_APT <- nimbleFunctionVirtual(
     ## run = function(temperture=double(0, default=1)) {},

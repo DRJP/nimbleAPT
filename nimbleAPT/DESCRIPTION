@@ -1,6 +1,6 @@
 Package: nimbleAPT
 Type: Package
-Title: Adaptive Parallel Tempering for 'nimble'
+Title: Adaptive Parallel Tempering for 'NIMBLE'
 Version: 1.0.4
 Encoding: UTF-8
 Date: 2021-11-10
@@ -12,7 +12,7 @@ Authors@R: c(
  person("Christopher", "Paciorek", role = "ctb", comment = c("Member of the NIMBLE Developent Team")),
  person("Nick", "Michaud", role = "ctb", comment = c("Member of the NIMBLE Developent Team")))
 URL: https://github.com/DRJP/nimbleAPT
-Description: Functions for adaptive parallel tempering (APT) with nimble models. Adapted from 'Lacki' & 'Miasojedow' (2016) <DOI:10.1007/s11222-015-9579-0> and 'Miasojedow, Moulines and Vihola' (2013) <DOI:10.1080/10618600.2013.778779>.
+Description: Functions for adaptive parallel tempering (APT) with NIMBLE models. Adapted from 'Lacki' & 'Miasojedow' (2016) <DOI:10.1007/s11222-015-9579-0> and 'Miasojedow, Moulines and Vihola' (2013) <DOI:10.1080/10618600.2013.778779>.
 License: BSD_3_clause + file LICENSE
 Copyright: See COPYRIGHTS file.
 Depends:

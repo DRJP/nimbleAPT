@@ -14,6 +14,7 @@ rhub::check()
 
 ## Info on last submission to rhub
 rhub::last_check()
+rhub::last_check()$cran_summary()
 
 
 # From https://www.mzes.uni-mannheim.de/socialsciencedatalab/article/r-package/#subsection6-1
@@ -24,6 +25,12 @@ rhub::last_check()
 results <- rhub::check_for_cran()
 # Get the summary of your results
 results$cran_summary()
+
+## 18h25 launched
+## 18h email 1
+## 18h email 2
+## 18h email 3
+
 
 # Alternatively
 devtools::check_rhub()

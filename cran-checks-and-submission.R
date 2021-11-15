@@ -35,7 +35,9 @@ res  = rhub::check(platform="ubuntu-gcc-release")
 res2 = rhub::check(platform="ubuntu-gcc-devel")
 ## suggests it's an Eigen problem
 
-## 12h36 ran command - 12h4x preperror email ??
+## EXPERIMENT - removed methods from imports
+## 13h37 ran command - 13h4? preperror email ??
+
 
 
 # Generate your cran-comments.md, then you copy-paste the output from the function above

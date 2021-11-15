@@ -17,7 +17,10 @@ License: BSD_3_clause + file LICENSE
 Copyright: See COPYRIGHTS file.
 Depends:
     R (>= 3.1.2),
-    nimble
+    nimble,
+    methods
+Imports:
+    coda
 RoxygenNote: 7.1.1
 Suggests:
     knitr,

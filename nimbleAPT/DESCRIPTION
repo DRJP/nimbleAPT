@@ -15,15 +15,15 @@ URL: https://github.com/DRJP/nimbleAPT
 Description: Functions for adaptive parallel tempering (APT) with NIMBLE models. Adapted from 'Lacki' & 'Miasojedow' (2016) <DOI:10.1007/s11222-015-9579-0> and 'Miasojedow, Moulines and Vihola' (2013) <DOI:10.1080/10618600.2013.778779>.
 License: BSD_3_clause + file LICENSE
 Copyright: See COPYRIGHTS file.
+RoxygenNote: 7.1.1
 Depends:
     R (>= 3.1.2),
-    nimble,
-    methods
+    nimble
 Imports:
-    coda
-RoxygenNote: 7.1.1
+    methods
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+	coda
 VignetteBuilder: knitr
 Note: The APT samplers within this package were adapted from MCMC samplers provided in the NIMBLE package (https://github.com/nimble-dev/nimble). Those original NIMBLE functions were written by the four members of the NIMBLE Development Team cited above. All adaptations were the work of the package developer. Many thanks to the NIMBLE Development Team for their support during the development of this package.

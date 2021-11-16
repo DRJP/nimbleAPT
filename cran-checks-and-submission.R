@@ -5,7 +5,7 @@
 ## Tests the package can build and install on various platforms
 library(rhub)
 library(here)
-setwd(here("nimbleAPT/nimbleAPT"))
+setwd(here::here("nimbleAPT"))
 getwd()
 
 rhub::check()
@@ -34,16 +34,17 @@ results$cran_summary()
 
 # Alternatively
 devtools::check_rhub()
+devtools::check()
 
 # Or... alternatively, perhaps this can help...
 # https://stackoverflow.com/questions/63586750/error-with-ubuntu-linux-when-running-check-rhub-due-to-xml-library
 # platforms()
 res  = rhub::check(platform="ubuntu-gcc-release")
-res2 = rhub::check(platform="ubuntu-gcc-devel")
-## suggests it's an Eigen problem
-
-## EXPERIMENT - removed methods from imports
-## 13h37 ran command - 13h4? preperror email ??
+#res2 = rhub::check(platform="ubuntu-gcc-devel")
+## SUGGESTS IT'S AN EIGEN or RHUB PROBLEM
+##
+## 13h48ish ran command - 13h4
+res$cran_summary()
 
 
 

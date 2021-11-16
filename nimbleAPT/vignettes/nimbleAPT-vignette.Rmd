@@ -28,7 +28,7 @@ In practice, a "temperature ladder" (a ranked set of temperatures) is establishe
 MCMC is performed within each rung of the temperature ladder,
 and a special between-rung MCMC step is introduced so that parameter sets can move up and down the temperature ladder.
 Bayesian inference is made on the posterior samples of the unheated rung only.
-Adaptive parallel tempering algorithms automaticly tune the temperatures of the temperature ladder
+Adaptive parallel tempering algorithms automatically tune the temperatures of the temperature ladder
 so that target acceptance rates for proposed between-rung jumps are achieved.
 
 The nimbleAPT package provides the following...
@@ -159,4 +159,4 @@ The precision with which the weight of each posterior mode is estimated can be i
 1. the number of rungs in the temperature ladder, and moreover
 2. the number of iterations (niter).
 
-Finally, note that WAIC can be computed in exactly the same way as in nimble. See the section 'calculating WAIC' in the nimble manual for further etails.
+Finally, note that WAIC can be computed in exactly the same way as in nimble. See the section 'calculating WAIC' in the nimble manual for further details.

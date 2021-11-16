@@ -102,7 +102,7 @@ The \code{RW_multinomial} sampler accepts the following control list elements:
 \itemize{
 \item adaptive.  A logical argument, specifying whether the sampler should adapt the binomial proposal probabilities throughout the course of MCMC execution. (default = TRUE)
 \item adaptInterval.  The interval on which to perform adaptation.  A minimum value of 100 is required. (default = 200)
-\item useTempering. A logical argument to optionally turn tempering off (i.e. assume all temperatures are 1) for this sampler.
+\item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler.
 }
 }
 

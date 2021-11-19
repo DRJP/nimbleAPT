@@ -40,6 +40,11 @@ So I have replaced \dontrun with \donttest.
 > if(verbose)cat(..) (or maybe stop()) if you really have to write text to the console.
 > (except for print, summary, interactive functions)
 
+In the 'setup' code of buidAPT I have repaced 'print' with 'messages'.
+In the 'run' code of buildAPT this is not possible, because run code must be compiled using the NIMBLE compiler.
+So here nimPrint must be used instead of R functions such as message().
+All such messages in the 'run' code have flags that can be used to turn off this printing.
+I have removed two non-essential printed messages from the run code.
 
 
 ## In response to Gregor Seyer email, "CRAN submission nimbleAPT 1.0.3", 11 September 2020 05:28

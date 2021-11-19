@@ -47,6 +47,25 @@ All such messages in the 'run' code have flags that can be used to turn off this
 I have removed two non-essential printed messages from the run code.
 
 
+> Please make sure that you do not change the user's options, par or
+> working directory. If you really have to do so within functions, please
+> ensure with an *immediate* call of on.exit() that the settings are reset
+> when the function is exited. e.g.:
+> ...
+> oldpar <- par(no.readonly = TRUE)    # code line i
+> on.exit(par(oldpar))            # code line i + 1
+> ...
+> par(mfrow=c(2,2))            # somewhere after
+> ...
+> e.g.: APT_functions.R
+> If you're not familiar with the function, please check ?on.exit. This
+> function makes it possible to restore options before exiting a function
+> even if the function breaks. Therefore it needs to be called immediately
+> after the option change within a function.
+
+Done.
+
+
 ## In response to Gregor Seyer email, "CRAN submission nimbleAPT 1.0.3", 11 September 2020 05:28
 
 > Please omit the space within the doi specification to make it clickable._

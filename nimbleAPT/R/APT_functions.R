@@ -1248,12 +1248,16 @@ NULL
 ##' @importFrom graphics lines par plot
 ##' @export
 plotTempTraj <- function(cAPT) {
-    traj <- cAPT$tempTraj
-    nRow <- nrow(traj)
-    nCol <- ncol(traj)
-    myCols <- rainbow(nCol)
+    ## Backup & recover current plotting parameters
+    oldpar <- par(no.readonly = TRUE)
+    on.exit(par(oldpar))
+    ##
     par(mfrow=n2mfrow(2))
-    YLIM <- range(pretty(c(0, cAPT$tempTraj[,nCol])))
+    traj   <- cAPT$tempTraj
+    nRow   <- nrow(traj)
+    nCol   <- ncol(traj)
+    myCols <- rainbow(nCol)
+    YLIM   <- range(pretty(c(0, cAPT$tempTraj[,nCol])))
     plot(1:nRow, cAPT$tempTraj[,nCol], typ="n", ylim=YLIM, xlab="Iteration", ylab="Temperature")
     for (ii in 1:nCol)
         lines(cAPT$tempTraj[,ii], col=myCols[ii])

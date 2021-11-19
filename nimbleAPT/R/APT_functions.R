@@ -132,6 +132,10 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' permanently disabled by setting the system option
 ##' \code{nimbleOptions(MCMCprogressBar = FALSE)}.
 ##'
+##' \code{thin} Thinning to be applied to monitor.
+##'
+##' \code{thin2} Thinning to be applied to monitor2
+##'
 ##' Samples corresponding to the \code{monitors} and \code{monitors2} from the
 ##' MCMCconf are stored into the interval variables \code{mvSamples} and
 ##' \code{mvSamples2}, respectively. These may be accessed and converted into R
@@ -181,11 +185,14 @@ sampler_APT <- nimbleFunctionVirtual(
 ##'
 ##' @author David Pleydell, Daniel Turek
 ##'
+##' @return
+##' Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users shold be familiar with the chapter 'MCMC' of the NIMBLE manual.
+##'
 ##' @name buildAPT
 ##'
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##' bugsCode <- nimbleCode({
 ##'   for (ii in 1:nObs) {
 ##'     y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
@@ -234,6 +241,7 @@ buildAPT <- nimbleFunction(
                      monitorTmax=TRUE,    ## Logical. Save MCMC output for Tmax too.
                      ULT=1E6,             ## Scalar, Upper Limit on Temperatures
                      thinPrintTemps=1,    ## Nb. iterations between prints of temps when adaptTemps==TRUE
+                     verbose=TRUE         ## Flag to turn on/off progress messages
                      ...) {
         if(inherits(conf, 'modelBaseClass')) {
             conf <- configureMCMC(conf, ...)
@@ -242,7 +250,8 @@ buildAPT <- nimbleFunction(
         }
         if (missing(ULT)) {
             ULT <- 1E6
-            nimPrint("ULT set to ", ULT)
+            if (verbose)
+                nimPrint("ULT set to ", ULT)
         }
         dotdotdotArgs <- list(...)
         enableWAICargument <- if(!is.null(dotdotdotArgs$enableWAIC)) dotdotdotArgs$enableWAIC else nimbleOptions('MCMCenableWAIC')    ## accept enableWAIC argument regardless
@@ -264,7 +273,8 @@ buildAPT <- nimbleFunction(
         pSwapMatrix  <- nimMatrix(0, nTemps, nTemps)
         temporary    <- numeric(nTemps)
         accCountSwap <- nimMatrix(0, nTemps, nTemps)
-        nimPrint("Initial temperatures:", Temps,"\n")
+        if (verbose)
+            nimPrint("Initial temperatures:", Temps,"\n")
         ##
         for (tt in 1:nTemps) {
             for(ss in 1:nSamplersPerT) {
@@ -316,8 +326,8 @@ buildAPT <- nimbleFunction(
         allVarsIncludingLogProbs <- model$getVarNames(includeLogProb = TRUE)
         enableWAIC <- enableWAICargument || conf$enableWAIC   ## enableWAIC comes from MCMC configuration, or from argument to buildMCMC
         if(enableWAIC) {
-          if(dataNodeLength == 0)   stop('WAIC cannot be calculated, as no data nodes were detected in the model.')
-          mcmc_checkWAICmonitors(model = model, monitors = sampledNodes, dataNodes = dataNodes)
+            if(dataNodeLength == 0)   stop('WAIC cannot be calculated, as no data nodes were detected in the model.')
+            mcmc_checkWAICmonitors(model = model, monitors = sampledNodes, dataNodes = dataNodes)
         }
     },
     #################################################
@@ -333,13 +343,13 @@ buildAPT <- nimbleFunction(
                    progressBar    = logical(default=TRUE),
                    thin           = integer(default = -1),
                    thin2          = integer(default = -1)) {
-      ##
-      if(niter < 0)       stop('cannot specify niter < 0')
-      thinToUseVec <<- thinFromConfVec
-      if(thin  != -1) thinToUseVec[1] <<- thin
-      if(thin2 != -1) thinToUseVec[2] <<- thin2
-      ##
-      if(simulateAll) {
+        ##
+        if(niter < 0)       stop('cannot specify niter < 0')
+        thinToUseVec <<- thinFromConfVec
+        if(thin  != -1) thinToUseVec[1] <<- thin
+        if(thin2 != -1) thinToUseVec[2] <<- thin2
+        ##
+        if(simulateAll) {
             simulate(model)     ## Default behavior excludes data nodes
         }
         if(resetAnyway==TRUE) { ## Force reset to be TRUE on first usage to avoid segfault.
@@ -350,12 +360,14 @@ buildAPT <- nimbleFunction(
         }
         my_initializeModel$run()
         if(resetTempering) {
-            nimPrint("Resetting adaptation rate for tempering")
+            if (verbose)
+                nimPrint("Resetting adaptation rate for tempering")
             totalIters <<- 1
         }
         accCountSwap[,] <<- 0 * accCountSwap[,]
         if(reset) {
-            nimPrint("Resetting MCMC samplers.")
+            if (verbose)
+                nimPrint("Resetting MCMC samplers.")
             for (tt in 1:nTemps) {
                 nimCopy(from = model, to = mvTemps, row = tt, logProb = TRUE)
             }
@@ -565,58 +577,59 @@ buildAPT <- nimbleFunction(
             nimCopy(mvTemps, model, row=row, logProb=TRUE)
         },
         resizeVector = function(x = double(1), length = double(0)) {
-          returnType(double(1))
-          lengthOri = length(x)
-          xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])
-          x         = nimNumeric(length=length, value=0)
-          if (lengthOri <= length) {
-            x[1:lengthOri] = xPrev[1:lengthOri]
-          } else {
-            x[1:length] = xPrev[1:length]
-          }
-          return(x[])
+            returnType(double(1))
+            lengthOri = length(x)
+            xPrev     = nimNumeric(length=lengthOri, value=x[1:lengthOri])
+            x         = nimNumeric(length=length, value=0)
+            if (lengthOri <= length) {
+                x[1:lengthOri] = xPrev[1:lengthOri]
+            } else {
+                x[1:length] = xPrev[1:length]
+            }
+            return(x[])
         },
-        calculateWAIC = function(nburnin = integer(default = 0),
-                                 burnIn = integer(default = 0)) {
-          if(!enableWAIC) {
-            print('Error: must set enableWAIC = TRUE in buildAPT. See help(buildMCMC) for additional information.')
-            return(NaN)
-          }
-          if(burnIn != 0) {
-            print('Warning: \'burnIn\' argument is deprecated and will not be supported in future versions of NIMBLE. Please use the \'nburnin\' argument instead.')
-            ## If nburnin has not been changed, replace with burnIn value
-            if(nburnin == 0)   nburnin <- burnIn
-          }
-          nburninPostThinning <- ceiling(nburnin/thinToUseVec[1])
-          numMCMCSamples <- getsize(mvSamples) - nburninPostThinning
-          if((numMCMCSamples) < 2) {
-            print('Error: need more than one post burn-in MCMC samples')
-            return(-Inf)
-          }
-          logPredProbs <- matrix(nrow = numMCMCSamples, ncol = dataNodeLength)
-          logAvgProb <- 0
-          pWAIC <- 0
-          currentVals <- values(model, allVarsIncludingLogProbs)
+        calculateWAIC = function(nburnin = integer(default = 0) # ,
+                                 # burnIn = integer(default = 0)
+                                 ) {
+            if(!enableWAIC) {
+                print('Error: must set enableWAIC = TRUE in buildAPT to use the method calcualteWAIC. See help(buildAPT) and help(buildMCMC) for additional information.')
+                return(NaN)
+            }
+            ## if(burnIn != 0) {
+            ##     print('Warning: \'burnIn\' argument is deprecated and will not be supported in future versions of NIMBLE. Please use the \'nburnin\' argument instead.')
+            ##     ## If nburnin has not been changed, replace with burnIn value
+            ##     if(nburnin == 0)   nburnin <- burnIn
+            ## }
+            nburninPostThinning <- ceiling(nburnin/thinToUseVec[1])
+            numMCMCSamples <- getsize(mvSamples) - nburninPostThinning
+            if((numMCMCSamples) < 2) {
+                print('Error: need more than one post burn-in MCMC samples')
+                return(-Inf)
+            }
+            logPredProbs <- matrix(nrow = numMCMCSamples, ncol = dataNodeLength)
+            logAvgProb <- 0
+            pWAIC <- 0
+            currentVals <- values(model, allVarsIncludingLogProbs)
 
-          for(i in 1:numMCMCSamples) {
-            copy(mvSamples, model, nodesTo = sampledNodes, row = i + nburninPostThinning)
-            model$simulate(paramDeps)
-            model$calculate(dataNodes)
-            for(j in 1:dataNodeLength)
-              logPredProbs[i,j] <- model$getLogProb(dataNodes[j])
-          }
-          for(j in 1:dataNodeLength) {
-            maxLogPred <- max(logPredProbs[,j])
-            thisDataLogAvgProb <- maxLogPred + log(mean(exp(logPredProbs[,j] - maxLogPred)))
-            logAvgProb <- logAvgProb + thisDataLogAvgProb
-            pointLogPredVar <- var(logPredProbs[,j])
-            pWAIC <- pWAIC + pointLogPredVar
-          }
-          WAIC <- -2*(logAvgProb - pWAIC)
-          values(model, allVarsIncludingLogProbs) <<- currentVals
-          if(is.nan(WAIC)) print('WAIC was calculated as NaN.  You may need to add monitors to model latent states, in order for a valid WAIC calculation.')
-          returnType(double())
-          return(WAIC)
+            for(i in 1:numMCMCSamples) {
+                copy(mvSamples, model, nodesTo = sampledNodes, row = i + nburninPostThinning)
+                model$simulate(paramDeps)
+                model$calculate(dataNodes)
+                for(j in 1:dataNodeLength)
+                    logPredProbs[i,j] <- model$getLogProb(dataNodes[j])
+            }
+            for(j in 1:dataNodeLength) {
+                maxLogPred <- max(logPredProbs[,j])
+                thisDataLogAvgProb <- maxLogPred + log(mean(exp(logPredProbs[,j] - maxLogPred)))
+                logAvgProb <- logAvgProb + thisDataLogAvgProb
+                pointLogPredVar <- var(logPredProbs[,j])
+                pWAIC <- pWAIC + pointLogPredVar
+            }
+            WAIC <- -2*(logAvgProb - pWAIC)
+            values(model, allVarsIncludingLogProbs) <<- currentVals
+            if(is.nan(WAIC)) print('WAIC was calculated as NaN.  You may need to add monitors to model latent states, in order for a valid WAIC calculation.')
+            returnType(double())
+            return(WAIC)
         }
     )    ## ,
     ## where = getLoadingNamespace()
@@ -1198,11 +1211,16 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #'
 #' @name samplers
 #'
+#' @return These functions are called from the \code{addSampler} function and return an uncompiled APT sampler object that can be included in an APT sampling scheme.
+#'
 #' @aliases sampler sampler_RW_tempered sampler_RW_block_tempered sampler_RW_multinomial_tempered sampler_slice_tempered
 #'
-#' @seealso \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{runMCMC}}
+#' @seealso \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{buildAPT}} \code{\link{runMCMC}}
 #'
 #' @author David Pleydell, Daniel Turek
+#'
+#' @examples
+#' demo(APT_demo)
 #'
 #' @references
 #'

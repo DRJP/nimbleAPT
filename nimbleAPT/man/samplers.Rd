@@ -29,6 +29,9 @@ sampler_RW_multinomial_tempered(model, mvSaved, target, control)
 
 \item{control}{named list that controls the precise behavior of the sampler, with elements specific to \code{samplertype}.  The default values for control list are specified in the setup code of each sampling algorithm.  Descriptions of each sampling algorithm, and the possible customizations for each sampler (using the \code{control} argument) appear below.}
 }
+\value{
+These functions are called from the \code{addSampler} function and return an uncompiled APT sampler object that can be included in an APT sampling scheme.
+}
 \description{
 Modified from nimble's samplers_BASE to include a setTemp method
 
@@ -106,6 +109,10 @@ The \code{RW_multinomial} sampler accepts the following control list elements:
 }
 }
 
+\examples{
+demo(APT_demo)
+
+}
 \references{
 Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., and Teller, E. (1953). Equation of State Calculations by Fast Computing Machines. \emph{The Journal of Chemical Physics}, 21(6), 1087-1092.
 
@@ -116,7 +123,7 @@ Roberts, G. O. and S. K. Sahu (1997). Updating Schemes, Correlation Structure, B
 Shaby, B. and M. Wells (2011). \emph{Exploring an Adaptive Metropolis Algorithm}. 2011-14. Department of Statistics, Duke University.
 }
 \seealso{
-\code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{runMCMC}}
+\code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{buildAPT}} \code{\link{runMCMC}}
 }
 \author{
 David Pleydell, Daniel Turek

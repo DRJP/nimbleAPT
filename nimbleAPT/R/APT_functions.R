@@ -240,7 +240,7 @@ buildAPT <- nimbleFunction(
                      Temps,               ## Vector of temperatures. Typically, lowest temperature should be 1.
                      monitorTmax=TRUE,    ## Logical. Save MCMC output for Tmax too.
                      ULT=1E6,             ## Scalar, Upper Limit on Temperatures
-                     thinPrintTemps=1     ## Nb. iterations between prints of temps when adaptTemps==TRUE
+                     thinPrintTemps=1,    ## Nb. iterations between prints of temps when adaptTemps==TRUE
                      ...) {
         if(inherits(conf, 'modelBaseClass')) {
             conf <- configureMCMC(conf, ...)

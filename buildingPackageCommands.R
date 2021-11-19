@@ -10,6 +10,7 @@ setwd(here::here())
 devtools::build("nimbleAPT", vignettes=TRUE) # FALSE
 
 devtools::check("nimbleAPT")
+devtools::check("nimbleAPT")
 
 devtools::install("nimbleAPT", build_vignettes = TRUE) # FALSE
 

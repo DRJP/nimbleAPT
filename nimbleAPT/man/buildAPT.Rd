@@ -25,6 +25,9 @@ model is returned.}
 \item{...}{Additional arguments to be passed to \code{configureMCMC} if
 \code{conf} is a NIMBLE model object}
 }
+\value{
+Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users shold be familiar with the chapter 'MCMC' of the NIMBLE manual.
+}
 \description{
 Adapted from nimble::buildMCMC. Accepts a single required argument, which
 may be of class MCMCconf, or inherit from class modelBaseClass (a
@@ -63,7 +66,7 @@ method \code{mcmc$getTimes()} (default = FALSE).
 ladder will be adapted or not.
 
 \code{printTemps} Boolean specifying whether the temperature
-ladder will be printed during the MCMC. THe print frequency is
+ladder will be printed during the MCMC. The print frequency is
 controlled by thinPrintTemps.
 
 \code{tuneTemper1} Numeric tuning parameter of the adaptation
@@ -78,6 +81,10 @@ buildAPT. Defaults to 1.
 during MCMC execution (default = TRUE).  The progress bar can be
 permanently disabled by setting the system option
 \code{nimbleOptions(MCMCprogressBar = FALSE)}.
+
+\code{thin} Thinning to be applied to monitor.
+
+\code{thin2} Thinning to be applied to monitor2
 
 Samples corresponding to the \code{monitors} and \code{monitors2} from the
 MCMCconf are stored into the interval variables \code{mvSamples} and
@@ -94,7 +101,7 @@ except acting on the compiled model object.
 }
 \examples{
 
-\dontrun{
+\donttest{
 bugsCode <- nimbleCode({
   for (ii in 1:nObs) {
     y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)

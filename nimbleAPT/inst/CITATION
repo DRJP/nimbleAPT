@@ -8,7 +8,7 @@ noteManual <- sprintf("{R} package manual version %s", meta$Version)
 bibentry(
   bibtype = "Manual",
   author  = person("David R.J.", "Pleydell"),
-  title        = "{nimbleAPT}: Adaptive Parallel Tempering with NIMBLE.",
+  title        = "{nimbleAPT}: Adaptive Parallel Tempering with NIMBLE",
   year         = year,
   publisher    = "Zenodo",
   note         = note,

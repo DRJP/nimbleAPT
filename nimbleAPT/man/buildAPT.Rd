@@ -101,7 +101,7 @@ except acting on the compiled model object.
 }
 \examples{
 
-\donttest{
+## See the nimbleAPT vignette for more details.
 bugsCode <- nimbleCode({
   for (ii in 1:nObs) {
     y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
@@ -124,20 +124,12 @@ rModel <- nimbleModel(bugsCode,
                       constants=list(nObs=nObs, cholCov=covChol),
                       data=list(y=rModel$y),
                       inits=list(centroids=centroids))
-cModel <- compileNimble(rModel)
 
-simulate(cModel, "centroids")
-
-conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
+conf <- configureMCMC(rModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
 conf$removeSamplers()
 conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
-aptC <- compileNimble(aptR)
-aptC$run(niter=15000)
-WAIC <- aptC$calculateWAIC(nburnin = 5000)
-}
-
 
 
 

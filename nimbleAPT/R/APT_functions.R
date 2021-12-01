@@ -192,7 +192,7 @@ sampler_APT <- nimbleFunctionVirtual(
 ##'
 ##' @examples
 ##'
-##' \donttest{
+##' ## See the nimbleAPT vignette for more details.
 ##' bugsCode <- nimbleCode({
 ##'   for (ii in 1:nObs) {
 ##'     y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
@@ -215,20 +215,12 @@ sampler_APT <- nimbleFunctionVirtual(
 ##'                       constants=list(nObs=nObs, cholCov=covChol),
 ##'                       data=list(y=rModel$y),
 ##'                       inits=list(centroids=centroids))
-##' cModel <- compileNimble(rModel)
 ##'
-##' simulate(cModel, "centroids")
-##'
-##' conf <- configureMCMC(cModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
+##' conf <- configureMCMC(rModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
 ##' conf$removeSamplers()
 ##' conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 ##' conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
 ##' aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
-##' aptC <- compileNimble(aptR)
-##' aptC$run(niter=15000)
-##' WAIC <- aptC$calculateWAIC(nburnin = 5000)
-##' }
-##'
 ##'
 ##'
 ##'
@@ -1214,7 +1206,39 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' @author David Pleydell, Daniel Turek
 #'
 #' @examples
-#' demo(APT_demo)
+#' ## This example is taken from the nimbleAPT vignette. See the vignette for more details.
+#'
+#' bugsCode <- nimbleCode({
+#'    for (ii in 1:nObs) {
+#'        y[ii,1:2] ~ dmnorm(mean=absCentroids[1:2], cholesky=cholCov[1:2,1:2], prec_param=0)
+#'    }
+#'    absCentroids[1:2] <- abs(centroids[1:2])
+#'    for (ii in 1:2) {
+#'        centroids[ii] ~ dnorm(0, sd=1E3)
+#'    }
+#' })
+#'
+#' nObs      <- 100
+#' centroids <- rep(-3, 2)
+#' covChol   <- chol(diag(2))
+#'
+#' rModel <- nimbleModel(bugsCode,
+#'                      constants=list(nObs=nObs, cholCov=covChol),
+#'                      inits=list(centroids=centroids))
+#'
+#'simulate(rModel, "y") ## Use model to simulate data
+#'
+#' rModel <- nimbleModel(bugsCode,
+#'                       constants=list(nObs=nObs, cholCov=covChol),
+#'                       data=list(y=rModel$y),
+#'                       inits=list(centroids=centroids))
+#'
+#' conf <- configureMCMC(rModel, nodes="centroids", monitors="centroids", enableWAIC = TRUE)
+#'
+#' conf$removeSamplers()
+#' conf$addSampler("centroids[1]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+#' conf$addSampler("centroids[2]", type="sampler_RW_tempered", control=list(temperPriors=TRUE))
+#' aptR <- buildAPT(conf, Temps=1:5, ULT= 1000, print=TRUE)
 #'
 #' @references
 #'

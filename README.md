@@ -23,3 +23,8 @@ Citation
 --------
 If you use this package in you analyses, please cite it using the following DOI.
 [![DOI](https://zenodo.org/badge/106051349.svg)](https://zenodo.org/badge/latestdoi/106051349)
+
+The full citation is available in BibTex format via the following R command.
+```
+citation("nimbleAPT")
+```

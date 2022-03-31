@@ -7,7 +7,7 @@ The package was previously released under the name *nimble-snippets*.
 
 Installation
 ------------
-The package can be installed from CRAN. In the R console, just write
+The package can be installed from [CRAN](https://cran.r-project.org/web/packages/nimbleAPT/index.html). In the R console, just write
 ```
 install.packages("nimbleAPT")
 ```

@@ -799,10 +799,10 @@ sampler_RW_block_tempered <- nimbleFunction(
         my_calcAdaptationFactor <- calcAdaptationFactor(d, adaptFactorExponent)
         ## checks
         ## browser()
-        if(class(propCov)[1]   != 'matrix')  stop('propCov must be a matrix\n')
-        if(class(propCov[1,1]) != 'numeric') stop('propCov matrix must be numeric\n')
-        if(!all(dim(propCov)   == d))        stop('propCov matrix must have dimension ', d, 'x', d, '\n')
-        if(!isSymmetric(propCov))            stop('propCov matrix must be symmetric')
+        if(!inherits(propCov, 'matrix')) stop('propCov must be a matrix\n')
+        if(!inherits(propCov[1,1], 'numeric')) stop('propCov matrix must be numeric\n')
+        if(!all(dim(propCov)   == d)) stop('propCov matrix must have dimension ', d, 'x', d, '\n')
+        if(!isSymmetric(propCov)) stop('propCov matrix must be symmetric')
         ## Initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only temperature[1] is used.
     },

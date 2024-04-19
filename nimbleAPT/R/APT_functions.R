@@ -100,6 +100,13 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' already existing sample chains. Generally, \code{reset=FALSE} should only
 ##' be used when the MCMC has already been run (default = TRUE).
 ##'
+##' \code{resetMV}: Boolean specifying whether to begin recording posterior sample chains anew. This
+##' argument is only considered when using \code{reset = FALSE}.  Specifying \code{reset = FALSE,
+##' resetMV = TRUE} allows the MCMC algorithm to continue running from where it left off, but
+##' without appending the new posterior samples to the already existing samples, i.e. all previously
+##' obtained samples will be erased. This option can help reduce memory usage during burn-in
+##' (default = FALSE).
+##'
 ##' \code{resetTempering} Boolean specifying whether to reset the
 ##' flexibility of the temperature ladder's adaptation process.
 ##'
@@ -323,6 +330,7 @@ buildAPT <- nimbleFunction(
     #################################################
     run = function(niter          = integer(),
                    reset          = logical(default=TRUE),
+                   resetMV        = logical(default = FALSE), ## Allows resetting mvSamples when reset==FALSE
                    resetTempering = logical(default=FALSE),
                    simulateAll    = logical(default=FALSE),
                    time           = logical(default=FALSE),
@@ -362,26 +370,22 @@ buildAPT <- nimbleFunction(
             }
             mvSamples_offset  <- 0
             mvSamples2_offset <- 0
-            setSize(tempTraj,  niter/thinToUseVec[1], nTemps)
-            resize(mvSamples,  niter/thinToUseVec[1])
-            resize(mvSamples2, niter/thinToUseVec[2])
-            if (monitorTmax==TRUE) {
-                resize(mvSamplesTmax,  niter/thinToUseVec[1])
-                resize(mvSamples2Tmax, niter/thinToUseVec[2])
-            }
-            logProbs <<- resizeVector(logProbs, niter/thinToUseVec[1])
         } else {
             mvSamples_offset  <- getsize(mvSamples)
             mvSamples2_offset <- getsize(mvSamples2)
-            setSize(tempTraj,  niter/thinToUseVec[1], nTemps)
-            resize(mvSamples,  mvSamples_offset  + niter/thinToUseVec[1])
-            resize(mvSamples2, mvSamples2_offset + niter/thinToUseVec[2])
-            if (monitorTmax==TRUE) {
-                resize(mvSamplesTmax,  mvSamples_offset  + niter/thinToUseVec[1])
-                resize(mvSamples2Tmax, mvSamples2_offset + niter/thinToUseVec[2])
+            if (resetMV) {
+                mvSamples_offset  <- 0
+                mvSamples2_offset <- 0
             }
-            logProbs <<- resizeVector(logProbs, mvSamples_offset + niter/thinToUseVec[1])
         }
+        setSize(tempTraj,  niter/thinToUseVec[1], nTemps)
+        resize(mvSamples,  mvSamples_offset  + niter/thinToUseVec[1])
+        resize(mvSamples2, mvSamples2_offset + niter/thinToUseVec[2])
+        if (monitorTmax==TRUE) {
+            resize(mvSamplesTmax,  mvSamples_offset  + niter/thinToUseVec[1])
+            resize(mvSamples2Tmax, mvSamples2_offset + niter/thinToUseVec[2])
+        }
+        logProbs <<- resizeVector(logProbs, mvSamples_offset + niter/thinToUseVec[1])
         ##### Monitors & Progress Bar #####
         if(dim(samplerTimes)[1] != length(samplerFunctions))
             setSize(samplerTimes, length(samplerFunctions))

@@ -8,7 +8,7 @@ Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", u
 
 #' A virtual function to use as a contains argument when writing APT samplers
 #'
-#' Modified from nimble's samplers_BASE to include a setTemp method
+#' Modified from NIMBLE's samplers_BASE to include a setTemp method
 #'
 #' Set up functions for this class should include the following arguments
 #'
@@ -75,7 +75,7 @@ sampler_APT <- nimbleFunctionVirtual(
 
 
 ######################################################################################
-## buildAPT was adapted from nimble's buildMCMC to provide adaptive parallel tempering
+## buildAPT was adapted from NIMBLE's buildMCMC to provide adaptive parallel tempering
 ######################################################################################
 
 ##' Create an APT function, from an MCMCconf object
@@ -193,7 +193,7 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' @author David Pleydell, Daniel Turek
 ##'
 ##' @return
-##' Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users shold be familiar with the chapter 'MCMC' of the NIMBLE manual.
+##' Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users should be familiar with the chapter 'MCMC' of the NIMBLE manual.
 ##'
 ##' @name buildAPT
 ##'
@@ -1196,7 +1196,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' \itemize{
 #' \item adaptive.  A logical argument, specifying whether the sampler should adapt the binomial proposal probabilities throughout the course of MCMC execution. (default = TRUE)
 #' \item adaptInterval.  The interval on which to perform adaptation.  A minimum value of 100 is required. (default = 200)
-#' \item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler.
+#' \item useTempering. A logical argument to optionally turn tempering off (i.e. assume all temperatures are 1) for this sampler.
 #' }
 #'
 #' @name samplers
@@ -1297,7 +1297,7 @@ plotTempTraj <- function(cAPT) {
 
 
 
-## Copied from nimble since they do not export this function
+## Copied from NIMBLE since they do not export this function
 mcmc_checkWAICmonitors <- function(model, monitors, dataNodes) {
     monitoredDetermNodes <- model$expandNodeNames(monitors)[model$isDeterm(model$expandNodeNames(monitors))]
     if(length(monitoredDetermNodes) > 0) {

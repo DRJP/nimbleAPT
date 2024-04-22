@@ -8,6 +8,28 @@ library(here)
 setwd(here::here("nimbleAPT"))
 getwd()
 
+##################################################
+## rhub v2 code                                 ##
+## https://www.r-bloggers.com/2024/04/r-hub-v2/ ##
+##################################################
+rhub::rc_submit()
+
+devtools::check()      # ??
+
+# Spell checkl
+devtools::spell_check()
+
+# Checks for windows version
+devtools::check_win_devel()
+
+## Submit to CRAN with the following
+devtools::release()
+
+
+##############
+## Old Code ##
+##############
+
 rhub::check()
 ## 11h53 ran command - 12h03 preperror email
 ## 15: Ubuntu Linux 20.04.1 LTS, R-devel, GCC (ubuntu-gcc-devel)
@@ -33,7 +55,7 @@ results$cran_summary()
 
 
 # Alternatively
-devtools::check_rhub()
+devtools::check_rhub() ## Depricated since rhub.v2
 devtools::check()
 
 # Or... alternatively, perhaps this can help...

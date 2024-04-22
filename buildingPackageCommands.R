@@ -7,7 +7,7 @@ setwd(here::here('nimbleAPT'))
 roxygen2::roxygenise()
 
 setwd(here::here())
-devtools::build("nimbleAPT", vignettes=TRUE) # FALSE
+devtools::build("nimbleAPT", vignettes=TRUE) # FALSE # Can save time with FALSE
 
 devtools::check("nimbleAPT")
 

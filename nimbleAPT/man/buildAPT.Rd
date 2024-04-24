@@ -26,7 +26,7 @@ model is returned.}
 \code{conf} is a NIMBLE model object}
 }
 \value{
-Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users shold be familiar with the chapter 'MCMC' of the NIMBLE manual.
+Calling \code{buildAPT} returns an uncompiled APT function object. This is very similar to how NIMBLE's \code{buildMCMC} function returns an uncompiled MCMC function object. See \code{?buildMCMC}. Users should be familiar with the chapter 'MCMC' of the NIMBLE manual.
 }
 \description{
 Adapted from nimble::buildMCMC. Accepts a single required argument, which
@@ -74,7 +74,12 @@ ladder will be adapted or not.
 
 \code{printTemps} Boolean specifying whether the temperature
 ladder will be printed during the MCMC. The print frequency is
-controlled by thinPrintTemps.
+controlled by thinPrintTemps. The output includes (in order):
+iteration number of current MCMC run;
+total number of iterations of the tempering scheme - this will include itterations from previous MCMC runs unless resetTempering=TRUE;
+the number of rows in mvSamples;
+the number of rows in mvSamples2;
+the temperature ladder.
 
 \code{tuneTemper1} Numeric tuning parameter of the adaptation
 process of the temperature ladder. See source code for

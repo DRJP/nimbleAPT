@@ -124,7 +124,12 @@ sampler_APT <- nimbleFunctionVirtual(
 ##'
 ##' \code{printTemps} Boolean specifying whether the temperature
 ##' ladder will be printed during the MCMC. The print frequency is
-##' controlled by thinPrintTemps.
+##' controlled by thinPrintTemps. The output includes (in order):
+##' iteration number of current MCMC run;
+##' total number of iterations of the tempering scheme - this will include itterations from previous MCMC runs unless resetTempering=TRUE;
+##' the number of rows in mvSamples;
+##' the number of rows in mvSamples2;
+##' the temperature ladder.
 ##'
 ##' \code{tuneTemper1} Numeric tuning parameter of the adaptation
 ##' process of the temperature ladder. See source code for
@@ -387,6 +392,9 @@ buildAPT <- nimbleFunction(
         }
         logProbs <<- resizeVector(logProbs, mvSamples_offset + niter/thinToUseVec[1])
         ##### Monitors & Progress Bar #####
+        if (printTemps == TRUE) {
+            progressBar = FALSE
+        }
         if(dim(samplerTimes)[1] != length(samplerFunctions))
             setSize(samplerTimes, length(samplerFunctions))
         if(niter < progressBarLength+3)
@@ -402,7 +410,7 @@ buildAPT <- nimbleFunction(
         progressBarNextFloor <- floor(progressBarNext)
         ##########################
         ######## SAMPLING ########
-        for(iter in 1:niter) {
+        for (iter in 1:niter) {
             ## nimPrint(iter)
             checkInterrupt()
             ## ###############################################################
@@ -448,7 +456,7 @@ buildAPT <- nimbleFunction(
                 } else {
                     iFrom <- nTemps + 1 - ii
                 }
-                iTo <- rcat(n=1, prob=pSwapMatrix[iFrom, 1:nTemps])
+                iTo   <- rcat(n=1, prob=pSwapMatrix[iFrom, 1:nTemps])
                 pProp <- pSwapMatrix[iFrom,iTo]
                 pRev  <- pSwapMatrix[iTo,iFrom]
                 lMHR  <- (invTemps[iTo]-invTemps[iFrom]) * (logProbTemps[iFrom]-logProbTemps[iTo]) + log(pRev) - log(pProp)
@@ -503,15 +511,19 @@ buildAPT <- nimbleFunction(
             #################
             ## MCMC Output ##
             #################
-            if(iter %% thinToUseVec[1]  == 0) {
+            if(iter %% thinToUseVec[1] == 0) {
                 nimCopy(from = mvTemps, to = mvSamples, row = 1, rowTo = mvSamples_offset + iter/thinToUseVec[1],  nodes = monitors)
                 tempTraj[iter/thinToUseVec[1], 1:nTemps] <<- Temps[1:nTemps]
                 logProbs[mvSamples_offset + iter/thinToUseVec[1]] <<- logProbTemps[1]
-                if(printTemps == 1.0) {
-                    if(totalIters %% thinPrintTemps == 0) {
-                        nimPrint(iter, asRow(Temps))
-                        if(!adaptTemps)
-                            printTemps <- 0.0
+            }
+            if(printTemps == 1.0) {
+                if(totalIters %% thinPrintTemps == 1) {
+                    ## nimPrint(iter, asRow(Temps))
+                    size_mvSamples  <- getsize(mvSamples)
+                    size_mvSamples2 <- getsize(mvSamples2)
+                    nimPrint(iter, " ", totalIters-1, " ", size_mvSamples, " ", size_mvSamples2, asRow(Temps))
+                    if(!adaptTemps) {
+                        printTemps <- 0.0
                     }
                 }
             }

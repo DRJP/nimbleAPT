@@ -1,7 +1,7 @@
 Package: nimbleAPT
 Type: Package
 Title: Adaptive Parallel Tempering for 'NIMBLE'
-Version: 1.0.5
+Version: 1.0.6
 Encoding: UTF-8
 Date: 2024-04-19
 Maintainer: David Pleydell <david.pleydell@inrae.fr>

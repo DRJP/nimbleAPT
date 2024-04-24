@@ -33,7 +33,7 @@ sampler_RW_multinomial_tempered(model, mvSaved, target, control)
 These functions are called from the \code{addSampler} function and return an uncompiled APT sampler object that can be included in an APT sampling scheme.
 }
 \description{
-Modified from nimble's samplers_BASE to include a setTemp method
+Modified from NIMBLE's samplers_BASE to include a setTemp method
 
 Details of the adaptive parallel tempering (APT) samplers adapted from nimble's MCMC samplers.
 }
@@ -105,7 +105,7 @@ The \code{RW_multinomial} sampler accepts the following control list elements:
 \itemize{
 \item adaptive.  A logical argument, specifying whether the sampler should adapt the binomial proposal probabilities throughout the course of MCMC execution. (default = TRUE)
 \item adaptInterval.  The interval on which to perform adaptation.  A minimum value of 100 is required. (default = 200)
-\item useTempering. A logical argument to optionally turn temporing off (i.e. assume all temperatures are 1) for this sampler.
+\item useTempering. A logical argument to optionally turn tempering off (i.e. assume all temperatures are 1) for this sampler.
 }
 }
 

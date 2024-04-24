@@ -1,3 +1,13 @@
+## Changes in version 1.0.5 - 23/04/2024
+- A bug fix for the frequency of printed output during the adaptation of the temperature ladder.
+- Removed conflict in printed output between temperature ladder and progress bar.
+
+
+## Changes in version 1.0.5 - 22/04/2024
+A simple change, added resetMV as a logical flag in the run function of buildAPT.
+This addition makes the package more in line with NIMBLE.
+
+
 ## Results of 'R CMD check --as-cran nimbleAPT_1.0.4.tar.gz'
 * using log directory ‘/home/pleydell/nimbleProjects/nimbleAPT/nimbleAPT.Rcheck’
 * using R version 4.1.2 (2021-11-01)

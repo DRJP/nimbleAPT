@@ -76,7 +76,7 @@ ladder will be adapted or not.
 ladder will be printed during the MCMC. The print frequency is
 controlled by thinPrintTemps. The output includes (in order):
 iteration number of current MCMC run;
-total number of iterations of the tempering scheme - this will include itterations from previous MCMC runs unless resetTempering=TRUE;
+total number of iterations of the tempering scheme - this will include iterations from previous MCMC runs unless resetTempering=TRUE;
 the number of rows in mvSamples;
 the number of rows in mvSamples2;
 the temperature ladder.

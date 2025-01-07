@@ -126,7 +126,7 @@ sampler_APT <- nimbleFunctionVirtual(
 ##' ladder will be printed during the MCMC. The print frequency is
 ##' controlled by thinPrintTemps. The output includes (in order):
 ##' iteration number of current MCMC run;
-##' total number of iterations of the tempering scheme - this will include itterations from previous MCMC runs unless resetTempering=TRUE;
+##' total number of iterations of the tempering scheme - this will include iterations from previous MCMC runs unless resetTempering=TRUE;
 ##' the number of rows in mvSamples;
 ##' the number of rows in mvSamples2;
 ##' the temperature ladder.
@@ -1147,7 +1147,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 
 #' APT Sampling Algorithms
 #'
-#' Details of the adaptive parallel tempering (APT) samplers adapted from nimble's MCMC samplers.
+#' Details of the adaptive parallel tempering (APT) samplers adapted from NIMBLE's MCMC samplers.
 #'
 #' @param model (uncompiled) model on which the APT algorithm is to be run
 #' @param mvSaved \code{modelValues} object to be used to store MCMC samples
@@ -1181,7 +1181,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' The RW_block sampler accepts the following control list elements:
 #' \itemize{
 #' \item adaptive. A logical argument, specifying whether the sampler should adapt the scale (a coefficient for the entire proposal covariance matrix) and propCov (the multivariate normal proposal covariance matrix) throughout the course of MCMC execution.  If only the scale should undergo adaptation, this argument should be specified as TRUE. (default = TRUE)
-#' \item adaptScaleOnly. A logical argument, specifying whether adaption should be done only for scale (TRUE) or also for provCov (FALSE).  This argument is only relevant when adaptive = TRUE.  When adaptScaleOnly = FALSE, both scale and propCov undergo adaptation; the sampler tunes the scaling to achieve a theoretically good acceptance rate, and the proposal covariance to mimic that of the empirical samples.  When adaptScaleOnly = TRUE, only the proposal scale is adapted. (default = FALSE)
+#' \item adaptScaleOnly. A logical argument, specifying whether adaption should be done only for scale (TRUE) or also for propCov (FALSE).  This argument is only relevant when adaptive = TRUE.  When adaptScaleOnly = FALSE, both scale and propCov undergo adaptation; the sampler tunes the scaling to achieve a theoretically good acceptance rate, and the proposal covariance to mimic that of the empirical samples.  When adaptScaleOnly = TRUE, only the proposal scale is adapted. (default = FALSE)
 #' \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW_block sampler will perform its adaptation procedure, based on the past adaptInterval iterations. (default = 200)
 #' \item scale. The initial value of the scalar multiplier for propCov.  If adaptive = FALSE, scale will never change. (default = 1)
 #' \item propCov. The initial covariance matrix for the multivariate normal proposal distribution.  This element may be equal to the character string 'identity', in which case the identity matrix of the appropriate dimension will be used for the initial proposal covariance matrix. (default = 'identity')
@@ -1217,7 +1217,7 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #'
 #' @aliases sampler sampler_RW_tempered sampler_RW_block_tempered sampler_RW_multinomial_tempered sampler_slice_tempered
 #'
-#' @seealso \code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{buildAPT}} \code{\link{runMCMC}}
+#' @seealso \code{\link[nimble]{configureMCMC}} \code{\link[nimble]{addSampler}} \code{\link[nimble]{buildMCMC}} \code{\link{buildAPT}} \code{\link[nimble]{runMCMC}}
 #'
 #' @author David Pleydell, Daniel Turek
 #'

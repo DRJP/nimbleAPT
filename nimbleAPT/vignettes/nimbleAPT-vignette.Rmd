@@ -33,8 +33,8 @@ so that target acceptance rates for proposed between-rung jumps are achieved.
 
 The nimbleAPT package provides the following...
 
-1. A buildAPT function: adapted from nimble's buildMCMC, this function sets up the APT algorithm, including between-rung steps and temperature ladder adaptation.
-2. A set of samplers, adapted from nimble's standard MCMC samplers, that include heating of the posterior likelihood.
+1. A buildAPT function: adapted from NIMBLE's buildMCMC, this function sets up the APT algorithm, including between-rung steps and temperature ladder adaptation.
+2. A set of samplers, adapted from NIMBLE's standard MCMC samplers, that include heating of the posterior likelihood.
 
 
 ```{r, include = FALSE}
@@ -94,7 +94,7 @@ legend("topleft", c("posterior modes", "data"), col=c("red","black"), pch=4, cex
 ```
 
 
-Now for some standard MCMC using nimble's default choice of samplers.
+Now for some standard MCMC using NIMBLE's default choice of samplers.
 
 ```{r fitting1, fig.width=7, fig.height=7}
 

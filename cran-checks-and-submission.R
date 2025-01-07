@@ -12,8 +12,6 @@ getwd()
 ## rhub v2 code                                 ##
 ## https://www.r-bloggers.com/2024/04/r-hub-v2/ ##
 ##################################################
-rhub::rc_submit()
-
 devtools::check()      # ??
 
 # Spell checkl
@@ -22,8 +20,14 @@ devtools::spell_check()
 # Checks for windows version
 devtools::check_win_devel()
 
+# Check reverse dependencies
+revdepcheck::revdep_check()  ## installs all dependancies - super slow !!
+
+
 ## Submit to CRAN with the following
 devtools::release()
+rhub::rc_submit(confirmation = TRUE) # email address is taken from DESCRIPTION
+
 
 
 ##############

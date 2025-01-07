@@ -35,7 +35,7 @@ These functions are called from the \code{addSampler} function and return an unc
 \description{
 Modified from NIMBLE's samplers_BASE to include a setTemp method
 
-Details of the adaptive parallel tempering (APT) samplers adapted from nimble's MCMC samplers.
+Details of the adaptive parallel tempering (APT) samplers adapted from NIMBLE's MCMC samplers.
 }
 \details{
 Set up functions for this class should include the following arguments
@@ -74,7 +74,7 @@ The RW_block sampler performs a simultaneous update of one or more model nodes, 
 The RW_block sampler accepts the following control list elements:
 \itemize{
 \item adaptive. A logical argument, specifying whether the sampler should adapt the scale (a coefficient for the entire proposal covariance matrix) and propCov (the multivariate normal proposal covariance matrix) throughout the course of MCMC execution.  If only the scale should undergo adaptation, this argument should be specified as TRUE. (default = TRUE)
-\item adaptScaleOnly. A logical argument, specifying whether adaption should be done only for scale (TRUE) or also for provCov (FALSE).  This argument is only relevant when adaptive = TRUE.  When adaptScaleOnly = FALSE, both scale and propCov undergo adaptation; the sampler tunes the scaling to achieve a theoretically good acceptance rate, and the proposal covariance to mimic that of the empirical samples.  When adaptScaleOnly = TRUE, only the proposal scale is adapted. (default = FALSE)
+\item adaptScaleOnly. A logical argument, specifying whether adaption should be done only for scale (TRUE) or also for propCov (FALSE).  This argument is only relevant when adaptive = TRUE.  When adaptScaleOnly = FALSE, both scale and propCov undergo adaptation; the sampler tunes the scaling to achieve a theoretically good acceptance rate, and the proposal covariance to mimic that of the empirical samples.  When adaptScaleOnly = TRUE, only the proposal scale is adapted. (default = FALSE)
 \item adaptInterval. The interval on which to perform adaptation.  Every adaptInterval MCMC iterations (prior to thinning), the RW_block sampler will perform its adaptation procedure, based on the past adaptInterval iterations. (default = 200)
 \item scale. The initial value of the scalar multiplier for propCov.  If adaptive = FALSE, scale will never change. (default = 1)
 \item propCov. The initial covariance matrix for the multivariate normal proposal distribution.  This element may be equal to the character string 'identity', in which case the identity matrix of the appropriate dimension will be used for the initial proposal covariance matrix. (default = 'identity')
@@ -155,7 +155,7 @@ Roberts, G. O. and S. K. Sahu (1997). Updating Schemes, Correlation Structure, B
 Shaby, B. and M. Wells (2011). \emph{Exploring an Adaptive Metropolis Algorithm}. 2011-14. Department of Statistics, Duke University.
 }
 \seealso{
-\code{\link{configureMCMC}} \code{\link{addSampler}} \code{\link{buildMCMC}} \code{\link{buildAPT}} \code{\link{runMCMC}}
+\code{\link[nimble]{configureMCMC}} \code{\link[nimble]{addSampler}} \code{\link[nimble]{buildMCMC}} \code{\link{buildAPT}} \code{\link[nimble]{runMCMC}}
 }
 \author{
 David Pleydell, Daniel Turek

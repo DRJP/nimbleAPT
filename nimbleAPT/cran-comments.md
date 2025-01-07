@@ -1,3 +1,6 @@
+## Changes in version 1.0.7 - 07/01/2025
+Minor changes in rd files.
+
 ## Changes in version 1.0.5 - 23/04/2024
 - A bug fix for the frequency of printed output during the adaptation of the temperature ladder.
 - Removed conflict in printed output between temperature ladder and progress bar.

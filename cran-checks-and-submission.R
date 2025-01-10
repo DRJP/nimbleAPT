@@ -12,12 +12,23 @@ getwd()
 ## rhub v2 code                                 ##
 ## https://www.r-bloggers.com/2024/04/r-hub-v2/ ##
 ##################################################
-devtools::check()      # ??
+devtools::check()
+devtools::check(cran=TRUE) # default is FALSE
 
-# Spell checkl
+# Spell check
 devtools::spell_check()
 
-# Checks for windows version
+# cd ~/nimbleProjects/nimbleAPT
+# R CMD build nimbleAPT
+# R CMD check nimbleAPT_1.0.7.tar.gz
+# R CMD check --as-cran nimbleAPT_1.0.7.tar.gz
+
+# Check rhub
+# devtools::check_rhub() # Depricated
+# New version of rhub checks - see ?rhubv2
+rhub::rc_submit(confirmation = TRUE) # email address is taken from DESCRIPTION
+
+# Check windows version - sends a report by email 15-30 minutes after command
 devtools::check_win_devel()
 
 # Check reverse dependencies
@@ -26,7 +37,6 @@ revdepcheck::revdep_check()  ## installs all dependancies - super slow !!
 
 ## Submit to CRAN with the following
 devtools::release()
-rhub::rc_submit(confirmation = TRUE) # email address is taken from DESCRIPTION
 
 
 

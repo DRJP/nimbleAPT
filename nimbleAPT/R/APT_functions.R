@@ -2,38 +2,37 @@
 ### Virtual nimbleFunction template, included for ALL samplers #####
 ####################################################################
 
-globalVariables(c("sampler_APT"))
+## globalVariables(c("sampler_APT"))
 Sys.setenv(R_CHECK_SYSTEM_CLOCK = FALSE) ## Sys.getenv("R_CHECK_SYSTEM_CLOCK", unset = NA)
 
 
-#' A virtual function to use as a contains argument when writing APT samplers
-#'
-#' Modified from NIMBLE's samplers_BASE to include a setTemp method
-#'
-#' Set up functions for this class should include the following arguments
-#'
-#' @param model name of model to be sampled
-#' @param mvSaved model values object to use when sampling
-#' @param target nodes to be targeted by sampler
-#' @param control other control parameters
-#'
-#' @details APT samplers must include "contains = sampler_APT" and include a setTemp method
-#'
-#' @rdname samplers
-#' @import nimble
-#' @import methods
-#' @export
-sampler_APT <- nimbleFunctionVirtual(
-    ## run = function(temperture=double(0, default=1)) {},
-    name = 'sampler_APT',
-    methods = list(
-        setTemp = function(temp = double()) {},
-        ## turnOffAdaptation = function() {},
-        reset   = function() {}
-    )
-)
-
-### utils::globalVariables("sampler_APT")
+## #' A virtual function to use as a contains argument when writing APT samplers
+## #'
+## #' Modified from NIMBLE's samplers_BASE to include a setTemp method
+## #'
+## #' Set up functions for this class should include the following arguments
+## #'
+## #' @param model name of model to be sampled
+## #' @param mvSaved model values object to use when sampling
+## #' @param target nodes to be targeted by sampler
+## #' @param control other control parameters
+## #'
+## #' @details APT samplers must include "contains = sampler_APT" and include a setTemp method
+## #'
+## #' @rdname samplers
+## #' @import nimble
+## #' @import methods
+## #' @export
+## sampler_APT <- nimbleFunctionVirtual(
+##     ## run = function(temperture=double(0, default=1)) {},
+##     name = 'sampler_APT',
+##     methods = list(
+##         setTemp = function(temp = double()) {},
+##         ## turnOffAdaptation = function() {},
+##         reset   = function() {}
+##     )
+## )
+## ### utils::globalVariables("sampler_APT")
 
 
 #######################################################################################################################################################
@@ -238,6 +237,7 @@ sampler_APT <- nimbleFunctionVirtual(
 ##'
 #'
 #' @import nimble
+#' @importFrom nimble sampler_BASE
 #' @export
 buildAPT <- nimbleFunction(
     setup = function(conf,                ## As for buildMCMC
@@ -261,7 +261,7 @@ buildAPT <- nimbleFunction(
         my_initializeModel <- initializeModel(model)
         mvSaved            <- modelValues(model)                   ## Used to restore model following rejection in MCMC
         nSamplersPerT      <- length(seq_along(conf$samplerConfs)) ## Nb. samplers / temp'
-        samplerFunctions   <- nimbleFunctionList(sampler_APT)
+        samplerFunctions   <- nimbleFunctionList(sampler_BASE)
         ## Tempering related objects
         Temps        <- as.numeric(sort(Temps)) ## Ensures compiler knows Temps is not integer
         nTemps       <- length(Temps)           ## Number of temperatures for tempering
@@ -282,7 +282,7 @@ buildAPT <- nimbleFunction(
             for(ss in 1:nSamplersPerT) {
                 ist <- ss + (tt-1) * nSamplersPerT ## index for Sampler & Temperature
                 samplerFunctions[[ist]] <- conf$samplerConfs[[ss]]$buildSampler(model=model, mvSaved=mvSaved)
-                samplerFunctions[[ist]]$setTemp(temp=Temps[tt])
+                ## samplerFunctions[[ist]]$setTemp(temp=Temps[tt])
             }
         }
         ##
@@ -423,9 +423,11 @@ buildAPT <- nimbleFunction(
                     nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE)
                     for(ss in 1:nSamplersPerT) {
                         iST <- ss + (tt-1) * nSamplersPerT
-                        samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
+                        ## samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
+                        ## samplerTimes[iST] <<- samplerTimes[iST] +
+                        ##     run.time(samplerFunctions[[iST]]$run())
                         samplerTimes[iST] <<- samplerTimes[iST] +
-                            run.time(samplerFunctions[[iST]]$run())
+                          run.time(samplerFunctions[[iST]]$run(temp=Temps[tt]))
                     }
                     ## Copy state of MCMC at temperature tt back to mvTemps
                     nimCopy(from=model, to=mvTemps, rowTo=tt, logProb = TRUE)
@@ -439,8 +441,9 @@ buildAPT <- nimbleFunction(
                     nimCopy(from=model,   to=mvSaved, rowTo=1, logProb = TRUE)
                     for(ss in 1:nSamplersPerT) {
                         iST <- ss + (tt-1) * nSamplersPerT
-                        samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
-                        samplerFunctions[[iST]]$run()
+                        ## samplerFunctions[[iST]]$setTemp(temp=Temps[tt])
+                        ## samplerFunctions[[iST]]$run()
+                        samplerFunctions[[iST]]$run(temp=Temps[tt])
                     }
                     ## Copy state of MCMC at temperature tt back to mvTemps
                     nimCopy(from=model, to=mvTemps, rowTo=tt, logProb = TRUE)
@@ -646,9 +649,10 @@ buildAPT <- nimbleFunction(
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @importFrom nimble sampler_BASE
 sampler_RW_tempered <- nimbleFunction(
     name = 'sampler_RW_tempered',
-    contains = sampler_APT,
+    contains = sampler_BASE,
     setup = function(model, mvSaved, target, control) {
         ## Control list extraction
         logScale            <- if(!is.null(control$log))           control$log           else FALSE
@@ -687,7 +691,8 @@ sampler_RW_tempered <- nimbleFunction(
         ## Initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is just a hack. Only 1st element is used.
     },
-    run = function() {
+    run = function(temp = double(0)) {
+        setTemp(temp=temp)
         ## nimPrint(temperature[1])
         ## browser()
         currentValue <- model[[target]]
@@ -767,9 +772,10 @@ sampler_RW_tempered <- nimbleFunction(
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @importFrom nimble sampler_BASE
 sampler_RW_block_tempered <- nimbleFunction(
     name = 'sampler_RW_block_tempered',
-    contains = sampler_APT,
+    contains = sampler_BASE,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive            <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
@@ -818,7 +824,8 @@ sampler_RW_block_tempered <- nimbleFunction(
         ## Initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only temperature[1] is used.
     },
-    run = function() {
+    run = function(temp = double(0)) {
+        setTemp(temp=temp)
         ## browser()
         propValueVector <- generateProposalVector()
         if (temperPriors) {
@@ -895,9 +902,10 @@ sampler_RW_block_tempered <- nimbleFunction(
 #' @rdname samplers
 #' @export
 #' @import nimble
+#' @importFrom nimble sampler_BASE
 sampler_slice_tempered <- nimbleFunction(
     name = 'sampler_slice_tempered',
-    contains = sampler_APT,
+    contains = sampler_BASE,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive       <- if(!is.null(control$adaptive))       control$adaptive       else TRUE
@@ -922,7 +930,8 @@ sampler_slice_tempered <- nimbleFunction(
         ## initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only first element is used.
     },
-    run = function() {
+    run = function(temp=double(0)) {
+        setTemp(temp=temp)
         ## nimPrint(temperature[1])
         u  <- getLogProb(model, calcNodes) / temperature[1] - rexp(1, 1)    # generate (log)-auxiliary variable: exp(u) ~ uniform(0, exp(lp))
         x0 <- model[[target]]    # create random interval (L,R), of width 'width', around current value of target
@@ -1002,9 +1011,10 @@ sampler_slice_tempered <- nimbleFunction(
 #' @export
 #' @import nimble
 #' @importFrom stats runif
+#' @importFrom nimble sampler_BASE
 sampler_RW_multinomial_tempered <- nimbleFunction(
     name = 'sampler_RW_multinomial_tempered',
-    contains = sampler_APT,
+    contains = sampler_BASE,
     setup = function(model, mvSaved, target, control) {
         ## control list extraction
         adaptive      <- if(!is.null(control$adaptive))         control$adaptive      else TRUE
@@ -1047,7 +1057,8 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
         ## initialise temperature
         temperature <- nimNumeric(length=2, value=1) ## Length 2 is a hack. Only first element is used.
     },
-    run = function() {
+    run = function(temp = double(0)) {
+        setTemp(temp = temp)
         for(iFROM in 1:lTarget) {
             for(iTO in 1:(lTarget-1)) {
                 if(u > PiOver2) {
@@ -1154,9 +1165,9 @@ sampler_RW_multinomial_tempered <- nimbleFunction(
 #' @param target node(s) on which the sampler will be used
 #' @param control named list that controls the precise behavior of the sampler, with elements specific to \code{samplertype}.  The default values for control list are specified in the setup code of each sampling algorithm.  Descriptions of each sampling algorithm, and the possible customizations for each sampler (using the \code{control} argument) appear below.
 #'
-#' @section \code{sampler_APT}: base class for APT samplers
-#'
-#' When you write a new sampler for use in a NIMBLE MCMC with APT, you must include \code{contains = sampler_APT}.
+## #' @section \code{sampler_APT}: base class for APT samplers
+## #'
+## #' When you write a new sampler for use in a NIMBLE MCMC with APT, you must include \code{contains = sampler_APT}.
 #'
 #' @section RW sampler:
 #'
